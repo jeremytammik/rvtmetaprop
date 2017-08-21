@@ -63,6 +63,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="iCmdSettings.png" />
+    <EmbeddedResource Include="iCommand.png" />
     <Content Include="rvtmetaprop.addin" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
