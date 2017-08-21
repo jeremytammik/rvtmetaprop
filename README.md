@@ -30,7 +30,7 @@ You have two options to programmatically attach arbitrary data to building eleme
 - Traditional end user approach: [shared parameters](https://knowledge.autodesk.com/support/revit-products/learn-explore/caas/CloudHelp/cloudhelp/2015/ENU/Revit-Model/files/GUID-E7D12B71-C50D-46D8-886B-8E0C2B285988-htm.html). pros:
     - It comes with a user interface, the standard element property panel.
     - It is visible to Revit, exported to Forge can be used for scheduling, etc.
-- New API specific: extensible storage(http://thebuildingcoder.typepad.com/blog/about-the-author.html#5.23). pros and cons:
+- New API specific: [extensible storage](http://thebuildingcoder.typepad.com/blog/about-the-author.html#5.23). pros and cons:
     - No UI, you would have to implement that yourself.
     - The data is equipped with a protection level, is mostly ignored by Revit, therefore cannot be used for scheduling, is not exported to Forge, etc.
 
