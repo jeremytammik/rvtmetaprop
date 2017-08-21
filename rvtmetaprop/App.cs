@@ -10,9 +10,13 @@ namespace rvtmetaprop
 {
   class App : IExternalApplication
   {
-    public const string Caption = "RvtMetaProp";
+    public const string Caption = "Meta Properties";
 
-    SplitButton split_button;
+    /// <summary>
+    /// Our one and only split button
+    /// holding all the commands.
+    /// </summary>
+    SplitButton _split_button = null;
 
     /// <summary>
     /// This external application 
@@ -81,7 +85,7 @@ namespace rvtmetaprop
       }
 
       PushButtonData pbCommand = new PushButtonData(
-        "Import", "Import Meta Properties", ass_path,
+        "Import", "Import", ass_path,
         ass_name + ".Command" );
 
       PushButtonData pbCommandOpt = new PushButtonData(
@@ -107,7 +111,7 @@ namespace rvtmetaprop
 
       string panel_name = Caption;
 
-      RibbonPanel thisNewRibbonPanel = a.CreateRibbonPanel(
+      RibbonPanel new_panel = a.CreateRibbonPanel(
         tab_name, panel_name );
 
       // add button to ribbon panel
@@ -116,11 +120,11 @@ namespace rvtmetaprop
         = new SplitButtonData(
           "splitButton", "metaprop" );
 
-      split_button = thisNewRibbonPanel.AddItem(
+      _split_button = new_panel.AddItem(
         split_buttonData ) as SplitButton;
 
-      split_button.AddPushButton( pbCommand );
-      split_button.AddPushButton( pbCommandOpt );
+      _split_button.AddPushButton( pbCommand );
+      _split_button.AddPushButton( pbCommandOpt );
     }
 
     /// <summary>
@@ -131,8 +135,8 @@ namespace rvtmetaprop
     /// </summary>
     public void SetTopButtonCurrent()
     {
-      IList<PushButton> sbList = split_button.GetItems();
-      split_button.CurrentButton = sbList[0];
+      IList<PushButton> sbList = _split_button.GetItems();
+      _split_button.CurrentButton = sbList[0];
     }
     #endregion // Create Ribbon Tab
 
