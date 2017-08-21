@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command rvtmetaprop</Text>
+    <Description>Some description for rvtmetaprop</Description>
+    <Assembly>rvtmetaprop.dll</Assembly>
+    <FullClassName>rvtmetaprop.Command</FullClassName>
+    <ClientId>8f517463-3366-47a2-af2a-9776d7a943bd</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application rvtmetaprop</Name>
+    <Assembly>rvtmetaprop.dll</Assembly>
+    <FullClassName>rvtmetaprop.App</FullClassName>
+    <ClientId>ab3942ff-4797-4f18-bcf4-b9ff30ec3e97</ClientId>
+    <VendorId>com.typepad.thebuildingcoder</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>
