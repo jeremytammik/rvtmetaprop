@@ -16,7 +16,13 @@ namespace rvtmetaprop
   [Transaction( TransactionMode.Manual )]
   public class Command : IExternalCommand
   {
+#if DEBUG
+    static string _default_folder = "C:/a/vs/rvtmetaprop/test";
+#else
     static string _default_folder = "";
+#endif // _DEBUG
+
+    
     static string _filename = "";
 
     /// <summary>
