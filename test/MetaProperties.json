@@ -1,0 +1,141 @@
+[
+  {
+    "displayCategory": "1",
+    "displayValue": "1",
+    "displayName": "1",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "1",
+    "displayValue": "1",
+    "displayName": "1",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Other",
+    "displayValue": "123 Fake St\r\nAnytown, USA",
+    "displayName": "Project Address",
+    "externalId": "doc_e317018c-2190-40bd-8607-cb28565f5a2a",
+    "component": "Model",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Energy Analysis",
+    "displayValue": "test",
+    "displayName": "Energy Settings",
+    "externalId": "doc_e317018c-2190-40bd-8607-cb28565f5a2a",
+    "component": "Model",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Identity Data",
+    "displayValue": "",
+    "displayName": "Type Comments",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "DeleteOverride"
+  },
+  {
+    "displayCategory": "Identity Data",
+    "displayValue": "Urban Office",
+    "displayName": "Building Name",
+    "externalId": "doc_e317018c-2190-40bd-8607-cb28565f5a2a",
+    "component": "Model",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Identity Data",
+    "displayValue": "Urban Office",
+    "displayName": "Building Name",
+    "externalId": "doc_e317018c-2190-40bd-8607-cb28565f5a2a",
+    "component": "Model",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Identity Data",
+    "displayValue": "Web Services Provider",
+    "displayName": "Organization Description",
+    "externalId": "doc_e317018c-2190-40bd-8607-cb28565f5a2a",
+    "component": "Model",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Identity Data",
+    "displayValue": "Forge",
+    "displayName": "Organization Name",
+    "externalId": "doc_e317018c-2190-40bd-8607-cb28565f5a2a",
+    "component": "Model",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Autodesk",
+    "displayValue": "Web Services",
+    "displayName": "Forge1",
+    "externalId": "doc_e317018c-2190-40bd-8607-cb28565f5a2a",
+    "component": "Model",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Constraints",
+    "displayValue": "01.33333333333333",
+    "displayName": "Height Offset From Level",
+    "externalId": "057f554e-3e84-4c1c-a1be-ca5131018c7c-000107f8",
+    "component": "Floor [67576]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Constraints",
+    "displayValue": "25",
+    "displayName": "Offset",
+    "externalId": "70a72f3d-1f2d-4d8d-810a-a90b1ed999fc-00052325",
+    "component": "20-55 Tons Air Cooled Scroll Chiller [336677]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Constraints",
+    "displayValue": "0.104166666666666",
+    "displayName": "Offset",
+    "externalId": "4fd3532c-8103-443f-9f19-261af98ac493-0000f460",
+    "component": "System Panel [62560]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Dimensions",
+    "displayValue": "5",
+    "displayName": "Height",
+    "externalId": "4fd3532c-8103-443f-9f19-261af98ac493-0000f460",
+    "component": "System Panel [62560]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Test",
+    "displayValue": "test1",
+    "displayName": "jeremy1",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Test",
+    "displayValue": "test2",
+    "displayName": "jeremy2",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Link",
+    "link": "http://thebuildingcoder.typepad.com/"
+  },
+  {
+    "displayCategory": "Test",
+    "displayValue": "test3",
+    "displayName": "jeremy3",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "File",
+    "filelink": "/api/meta/configurator/59780eec17d671029c53420e/download/087a-7dcb-22e6.jpg",
+    "filename": "007_smile_1400_170.jpg"
+  }
+]
