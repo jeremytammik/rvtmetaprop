@@ -22,7 +22,7 @@ namespace rvtmetaprop
     static string _default_folder = "";
 #endif // _DEBUG
 
-    
+
     static string _filename = "";
 
     /// <summary>
@@ -107,7 +107,7 @@ namespace rvtmetaprop
       }
       else if( _filename.ToLower().EndsWith( ".csv" ) )
       {
-        IEnumerable < IList < string >> a 
+        IEnumerable<IList<string>> a
           = EasyCsv.FromFile( _filename, true );
 
         n = a.Count();
@@ -120,7 +120,7 @@ namespace rvtmetaprop
       }
       else
       {
-        message = "Unhandled meta property file format: " 
+        message = "Unhandled meta property file format: "
           + Path.GetExtension( _filename );
         return Result.Failed;
       }
@@ -133,7 +133,7 @@ namespace rvtmetaprop
 
       int nModelProp = doc_props.Count<MetaProp>();
 
-      Debug.Print( nModelProp.ToString() 
+      Debug.Print( nModelProp.ToString()
         + " 'Model' properties have extenalId prefix 'doc_'" );
 
       props.RemoveAll( m => m.IsModelProperty );
@@ -144,16 +144,16 @@ namespace rvtmetaprop
       UIDocument uidoc = uiapp.ActiveUIDocument;
       Document doc = uidoc.Document;
 
-      IEnumerable<MetaProp> missing 
-        = props.Where<MetaProp>( m 
+      IEnumerable<MetaProp> missing
+        = props.Where<MetaProp>( m
           => null == doc.GetElement( m.externalId ) );
 
       n = missing.Count<MetaProp>();
 
       if( 0 < n )
       {
-        string s = string.Format( 
-          "{0} invalid unique id{1}: ", 
+        string s = string.Format(
+          "{0} invalid unique id{1}: ",
           n, ( 1 == n ) ? "" : "s" );
 
         TaskDialog d = new TaskDialog( s );
@@ -162,25 +162,54 @@ namespace rvtmetaprop
           missing.Select<MetaProp, string>(
             m => m.component ) );
 
-        s += "\r\n\r\n" + nModelProp 
+        s += "\r\n\r\n" + nModelProp
           + " model properties ignored";
 
         d.MainContent = s;
         d.Show();
       }
 
+      props.RemoveAll(
+        m => null == doc.GetElement(
+          m.externalId ) );
+
       // Apply meta properties to model
 
       using( Transaction tx = new Transaction( doc ) )
       {
         tx.Start( "Import Forge Meta Properties" );
-        foreach(MetaProp m in props)
+        foreach( MetaProp m in props )
         {
+          Debug.Print( string.Format( 
+            "{0} property {1} = '{2}'", m.component, 
+            m.displayName, m.ParameterValue ) );
+
           Element e = doc.GetElement( m.externalId );
-          if(null == e)
+
+          IList<Parameter> a = e.GetParameters( m.displayName );
+
+          n = a.Count;
+          if( 1 < n )
           {
-            message = "Invalid unique id: " + m.externalId;
-            //return Result.Failed;
+            Debug.Print( string.Format(
+              "{0} has {1} parameters named {2}",
+              m.component, n, m.displayName ) );
+          }
+
+          foreach( Parameter p in a )
+          {
+            Definition pdef = p.Definition;
+            ParameterType ptyp = pdef.ParameterType;
+            if( ParameterType.Text != ptyp )
+            {
+              Debug.Print( string.Format(
+                "{0} parameter {1} has type {2}",
+                m.component, m.displayName, ptyp.ToString() ) );
+            }
+            else
+            {
+              p.Set( m.displayValue );
+            }
           }
         }
         tx.Commit();

@@ -8,10 +8,8 @@ namespace rvtmetaprop
   {
     public string externalId { get; set; }
     public string component { get; set; }
-
     public string displayCategory { get; set; }
     public string displayName { get; set; }
-
     public string displayValue { get; set; }
     public string metaType { get; set; }
     public string filelink { get; set; }
@@ -45,11 +43,11 @@ namespace rvtmetaprop
       displayName = record[3];
       displayValue = record[4];
       metaType = record[5];
-      link = record[6];
-      filelink = record[7];
-      if( 0 == n )
+      filelink = record[6];
+      filename = record[7];
+      if( 9 == n )
       {
-        filename = record[8];
+        link = record[8];
       }
     }
 
@@ -58,6 +56,34 @@ namespace rvtmetaprop
       get
       {
         return externalId.StartsWith( "doc_" );
+      }
+    }
+
+    public string ParameterValue
+    {
+      get
+      {
+        // metaType has one of the following values: 
+        // DeleteOverride, File, Link, Text
+
+        if( metaType.Equals( "Text" ) )
+        {
+          return displayValue;
+        }
+        if( metaType.Equals("Link" ) )
+        {
+          return displayValue + ":" + link;
+        }
+        if( metaType.Equals( "File" ) )
+        {
+          return displayValue + ":" + filelink + ":" + filename;
+        }
+        if( metaType.Equals( "DeleteOverride" ) )
+        {
+          return string.Empty;
+        }
+        Debug.Assert( false, "unexpected metaType" );
+        return string.Empty;
       }
     }
   }
