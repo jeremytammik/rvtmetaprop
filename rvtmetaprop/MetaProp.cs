@@ -72,11 +72,11 @@ namespace rvtmetaprop
         }
         if( metaType.Equals("Link" ) )
         {
-          return displayValue + ":" + link;
+          return "link:" + displayValue + ":" + link;
         }
         if( metaType.Equals( "File" ) )
         {
-          return displayValue + ":" + filelink + ":" + filename;
+          return "file:" + displayValue + ":" + filelink + ":" + filename;
         }
         if( metaType.Equals( "DeleteOverride" ) )
         {
