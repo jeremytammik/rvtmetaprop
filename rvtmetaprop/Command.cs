@@ -79,6 +79,8 @@ namespace rvtmetaprop
       ref string message,
       ElementSet elements )
     {
+      int n;
+
       // Select meta property input file
 
       if( !FileSelectMetaProp(
@@ -108,9 +110,9 @@ namespace rvtmetaprop
         IEnumerable < IList < string >> a 
           = EasyCsv.FromFile( _filename, true );
 
-        int n = a.Count();
+        n = a.Count();
         Debug.Print( n + " props deserialised" );
-        props = new List<MetaProp>(n);
+        props = new List<MetaProp>( n );
         foreach( IList<string> rec in a )
         {
           props.Add( new MetaProp( rec ) );
@@ -123,11 +125,35 @@ namespace rvtmetaprop
         return Result.Failed;
       }
 
-      // Apply meta properties to model
+      // Test that original elements are present in model
 
       UIApplication uiapp = commandData.Application;
       UIDocument uidoc = uiapp.ActiveUIDocument;
       Document doc = uidoc.Document;
+
+      IEnumerable<MetaProp> missing 
+        = props.Where<MetaProp>( m 
+          => null == doc.GetElement( m.externalId ) );
+
+      n = missing.Count<MetaProp>();
+
+      if( 0 < n )
+      {
+        string s = string.Format( 
+          "{0} invalid unique id{1}: ", 
+          n, ( 1 == n ) ? "" : "s" );
+
+        TaskDialog d = new TaskDialog( s );
+
+        s = string.Join( "\r\n", 
+          props.Select<MetaProp, string>(
+            m => m.component ) );
+
+        d.MainContent = s;
+        d.Show();
+      }
+
+      // Apply meta properties to model
 
       using( Transaction tx = new Transaction( doc ) )
       {
@@ -138,7 +164,7 @@ namespace rvtmetaprop
           if(null == e)
           {
             message = "Invalid unique id: " + m.externalId;
-            return Result.Failed;
+            //return Result.Failed;
           }
         }
         tx.Commit();
