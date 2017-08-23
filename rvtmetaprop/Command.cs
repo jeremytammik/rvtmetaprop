@@ -15,6 +15,7 @@ namespace rvtmetaprop
   [Transaction( TransactionMode.Manual )]
   public class Command : IExternalCommand
   {
+    #region Input File Handling
 #if DEBUG
     static string _default_folder = "C:/a/vs/rvtmetaprop/test";
 #else
@@ -71,6 +72,8 @@ namespace rvtmetaprop
         "Meta Property Files (*.csv;*.json)|*.csv;*.json|All Files|*.*",
         ref filename );
     }
+    #endregion // Input File Handling
+
     public Result Execute(
       ExternalCommandData commandData,
       ref string message,
