@@ -9,6 +9,7 @@ using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using System.Windows.Forms;
 using System.IO;
+using Newtonsoft.Json;
 #endregion
 
 namespace rvtmetaprop
@@ -86,35 +87,21 @@ namespace rvtmetaprop
 
       _default_folder = Path.GetDirectoryName( _filename );
 
+      if( _filename.ToLower().EndsWith( ".json" ) )
+      {
+        string s = File.ReadAllText( _filename );
+        List<MetaProp> props = JsonConvert
+          .DeserializeObject<List<MetaProp>>( s );
+        Debug.Print( props.Count + " props deserialised" );
+      }
 
       UIApplication uiapp = commandData.Application;
       UIDocument uidoc = uiapp.ActiveUIDocument;
       Document doc = uidoc.Document;
 
-      // Access current selection
-
-      Selection sel = uidoc.Selection;
-
-      // Retrieve elements from database
-
-      FilteredElementCollector col
-        = new FilteredElementCollector( doc )
-          .WhereElementIsNotElementType()
-          .OfCategory( BuiltInCategory.INVALID )
-          .OfClass( typeof( Wall ) );
-
-      // Filtered element collector is iterable
-
-      foreach( Element e in col )
-      {
-        Debug.Print( e.Name );
-      }
-
-      // Modify document within a transaction
-
       using( Transaction tx = new Transaction( doc ) )
       {
-        tx.Start( "Transaction Name" );
+        tx.Start( "Import Forge Meta Properties" );
         tx.Commit();
       }
 
