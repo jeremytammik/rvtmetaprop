@@ -1,15 +1,13 @@
 #region Namespaces
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Autodesk.Revit.ApplicationServices;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using Newtonsoft.Json;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Autodesk.Revit.UI.Selection;
-using System.Windows.Forms;
-using System.IO;
-using Newtonsoft.Json;
 #endregion
 
 namespace rvtmetaprop
@@ -87,12 +85,30 @@ namespace rvtmetaprop
 
       _default_folder = Path.GetDirectoryName( _filename );
 
+      List<MetaProp> props = null;
+
       if( _filename.ToLower().EndsWith( ".json" ) )
       {
         string s = File.ReadAllText( _filename );
-        List<MetaProp> props = JsonConvert
-          .DeserializeObject<List<MetaProp>>( s );
+        props = JsonConvert.DeserializeObject<List<MetaProp>>( s );
         Debug.Print( props.Count + " props deserialised" );
+      }
+      else if( _filename.ToLower().EndsWith( ".csv" ) )
+      {
+        IEnumerable < IList < string >> a = EasyCsv.FromFile( _filename );
+        int n = a.Count();
+        Debug.Print( n + " props deserialised" );
+        props = new List<MetaProp>(n);
+        foreach( IList<string> rec in a )
+        {
+          props.Add( new MetaProp( rec ) );
+        }
+      }
+      else
+      {
+        message = "Unhandled meta property file format: " 
+          + Path.GetExtension( _filename );
+        return Result.Failed;
       }
 
       UIApplication uiapp = commandData.Application;
