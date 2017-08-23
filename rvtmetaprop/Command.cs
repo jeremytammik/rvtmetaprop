@@ -68,7 +68,8 @@ namespace rvtmetaprop
     {
       return FileSelect( folder,
         "Select meta property file",
-        "CSV Files (*.csv)|*.csv|JSON Files (*.json)|*.json|All Files|*.*",
+        //"CSV Files (*.csv)|*.csv|JSON Files (*.json)|*.json|All Files|*.*",
+        "Meta Property Files (*.csv;*.json)|*.csv;*.json|All Files|*.*",
         ref filename );
     }
     public Result Execute(
