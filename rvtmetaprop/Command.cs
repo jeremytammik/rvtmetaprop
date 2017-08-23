@@ -125,6 +125,19 @@ namespace rvtmetaprop
         return Result.Failed;
       }
 
+      // Special 'Model' properties have extenalId prefix 'doc_'
+
+      IEnumerable<MetaProp> doc_props
+        = props.Where<MetaProp>( m
+          => m.IsModelProperty );
+
+      int nModelProp = doc_props.Count<MetaProp>();
+
+      Debug.Print( nModelProp.ToString() 
+        + " 'Model' properties have extenalId prefix 'doc_'" );
+
+      props.RemoveAll( m => m.IsModelProperty );
+
       // Test that original elements are present in model
 
       UIApplication uiapp = commandData.Application;
@@ -145,9 +158,12 @@ namespace rvtmetaprop
 
         TaskDialog d = new TaskDialog( s );
 
-        s = string.Join( "\r\n", 
-          props.Select<MetaProp, string>(
+        s = string.Join( "\r\n",
+          missing.Select<MetaProp, string>(
             m => m.component ) );
+
+        s += "\r\n\r\n" + nModelProp 
+          + " model properties ignored";
 
         d.MainContent = s;
         d.Show();

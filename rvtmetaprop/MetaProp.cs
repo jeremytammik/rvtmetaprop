@@ -17,6 +17,14 @@ namespace rvtmetaprop
     public string filelink { get; set; }
     public string filename { get; set; }
     public string link { get; set; }
+
+    /// <summary>
+    /// Default constructor for JSON deserialisation
+    /// </summary>
+    public MetaProp()
+    {
+    }
+    
     /// <summary>
     /// Read from a CSV file record containing the 
     /// following fields:
@@ -42,6 +50,14 @@ namespace rvtmetaprop
       if( 0 == n )
       {
         filename = record[8];
+      }
+    }
+
+    public bool IsModelProperty
+    {
+      get
+      {
+        return externalId.StartsWith( "doc_" );
       }
     }
   }
