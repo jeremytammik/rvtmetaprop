@@ -24,21 +24,25 @@ namespace rvtmetaprop
     /// </summary>
     public MetaProp( IList<string> record )
     {
-      Debug.Print( record.Count.ToString() );
-      //if( 9 != record.Count )
-      //{
-      //  throw new ArgumentException(
-      //    "Expected nine fields in CSV file record." );
-      //}
+      int n = record.Count;
+      //Debug.Print( n.ToString() );
+      if( 8 != n && 9 != n )
+      {
+        throw new ArgumentException(
+          "Expected nine fields in CSV file record." );
+      }
       externalId = record[0];
       component = record[1];
       displayCategory = record[2];
       displayName = record[3];
       displayValue = record[4];
       metaType = record[5];
-      //link = record[6];
-      //filelink = record[7];
-      //filename = record[8];
+      link = record[6];
+      filelink = record[7];
+      if( 0 == n )
+      {
+        filename = record[8];
+      }
     }
   }
 }

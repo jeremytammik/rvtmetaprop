@@ -76,6 +76,8 @@ namespace rvtmetaprop
       ref string message,
       ElementSet elements )
     {
+      // Select meta property input file
+
       if( !FileSelectMetaProp(
         _default_folder,
         ref _filename ) )
@@ -85,17 +87,24 @@ namespace rvtmetaprop
 
       _default_folder = Path.GetDirectoryName( _filename );
 
+      // Deserialise meta properties from input file
+
       List<MetaProp> props = null;
 
       if( _filename.ToLower().EndsWith( ".json" ) )
       {
         string s = File.ReadAllText( _filename );
-        props = JsonConvert.DeserializeObject<List<MetaProp>>( s );
+
+        props = JsonConvert
+          .DeserializeObject<List<MetaProp>>( s );
+
         Debug.Print( props.Count + " props deserialised" );
       }
       else if( _filename.ToLower().EndsWith( ".csv" ) )
       {
-        IEnumerable < IList < string >> a = EasyCsv.FromFile( _filename );
+        IEnumerable < IList < string >> a 
+          = EasyCsv.FromFile( _filename, true );
+
         int n = a.Count();
         Debug.Print( n + " props deserialised" );
         props = new List<MetaProp>(n);
@@ -111,6 +120,8 @@ namespace rvtmetaprop
         return Result.Failed;
       }
 
+      // Apply meta properties to model
+
       UIApplication uiapp = commandData.Application;
       UIDocument uidoc = uiapp.ActiveUIDocument;
       Document doc = uidoc.Document;
@@ -118,6 +129,15 @@ namespace rvtmetaprop
       using( Transaction tx = new Transaction( doc ) )
       {
         tx.Start( "Import Forge Meta Properties" );
+        foreach(MetaProp m in props)
+        {
+          Element e = doc.GetElement( m.externalId );
+          if(null == e)
+          {
+            message = "Invalid unique id: " + m.externalId;
+            return Result.Failed;
+          }
+        }
         tx.Commit();
       }
 
