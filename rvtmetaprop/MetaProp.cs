@@ -26,7 +26,7 @@ namespace rvtmetaprop
     public MetaProp()
     {
     }
-    
+
     /// <summary>
     /// Read from a CSV file record containing the 
     /// following fields:
@@ -63,7 +63,7 @@ namespace rvtmetaprop
       }
     }
 
-    public string ParameterValue
+    public object ParameterValue
     {
       get
       {
@@ -74,7 +74,31 @@ namespace rvtmetaprop
         {
           return displayValue;
         }
-        if( metaType.Equals("Link" ) )
+        if( metaType.Equals( "Int" ) )
+        {
+          int i;
+          if( int.TryParse( displayValue, out i ) )
+          {
+            return i;
+          }
+          Debug.Assert( false,
+            "invalid int property value "
+            + displayValue );
+          return 0;
+        }
+        if( metaType.Equals( "Double" ) )
+        {
+          double d;
+          if( double.TryParse( displayValue, out d ) )
+          {
+            return d;
+          }
+          Debug.Assert( false,
+            "invalid double property value "
+            + displayValue );
+          return 0.0;
+        }
+        if( metaType.Equals( "Link" ) )
         {
           return "link:" + displayValue + ":" + link;
         }
