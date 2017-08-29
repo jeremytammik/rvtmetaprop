@@ -16,6 +16,7 @@ namespace rvtmetaprop
   public class Command : IExternalCommand
   {
     #region Input File Handling
+
 #if DEBUG
     static string _default_folder = "C:/a/vs/rvtmetaprop/test";
 #else
@@ -81,7 +82,7 @@ namespace rvtmetaprop
     {
       int n;
 
-      // Select meta property input file
+      #region Select meta property input file
 
       if( !FileSelectMetaProp(
         _default_folder,
@@ -92,7 +93,9 @@ namespace rvtmetaprop
 
       _default_folder = Path.GetDirectoryName( _filename );
 
-      // Deserialise meta properties from input file
+      #endregion // Select meta property input file
+
+      #region Deserialise meta properties from input file
 
       List<MetaProp> props = null;
 
@@ -124,6 +127,8 @@ namespace rvtmetaprop
           + Path.GetExtension( _filename );
         return Result.Failed;
       }
+
+      #endregion // Deserialise meta properties from input file
 
       // Special 'Model' properties have extenalId prefix 'doc_'
 
@@ -189,27 +194,39 @@ namespace rvtmetaprop
           IList<Parameter> a = e.GetParameters( m.displayName );
 
           n = a.Count;
-          if( 1 < n )
-          {
-            Debug.Print( string.Format(
-              "{0} has {1} parameters named {2}",
-              m.component, n, m.displayName ) );
-          }
 
-          foreach( Parameter p in a )
+          if( 0 < n )
           {
-            Definition pdef = p.Definition;
-            ParameterType ptyp = pdef.ParameterType;
-            if( ParameterType.Text != ptyp )
+            // Property already exists on element
+
+            if( 1 < n )
             {
               Debug.Print( string.Format(
-                "{0} parameter {1} has type {2}",
-                m.component, m.displayName, ptyp.ToString() ) );
+                "{0} has {1} parameters named {2}",
+                m.component, n, m.displayName ) );
             }
-            else
+
+            foreach( Parameter p in a )
             {
-              p.Set( m.displayValue );
+              Definition pdef = p.Definition;
+              ParameterType ptyp = pdef.ParameterType;
+              if( ParameterType.Text != ptyp )
+              {
+                Debug.Print( string.Format(
+                  "{0} parameter {1} has type {2}",
+                  m.component, m.displayName, ptyp.ToString() ) );
+              }
+              else
+              {
+                // add support for int and double
+                p.Set( m.displayValue );
+              }
             }
+          }
+          else
+          {
+            // Property needs to be added to element
+
           }
         }
         tx.Commit();

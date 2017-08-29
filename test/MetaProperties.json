@@ -137,5 +137,21 @@
     "metaType": "File",
     "filelink": "/api/meta/configurator/59780eec17d671029c53420e/download/087a-7dcb-22e6.jpg",
     "filename": "007_smile_1400_170.jpg"
+  },
+  {
+    "displayCategory": "Test",
+    "displayValue": "12345",
+    "displayName": "jeremy4",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Int"
+  },
+  {
+    "displayCategory": "Test",
+    "displayValue": "0.123",
+    "displayName": "jeremy5",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Double"
   }
 ]

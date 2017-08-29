@@ -15,6 +15,10 @@ namespace rvtmetaprop
     public string filelink { get; set; }
     public string filename { get; set; }
     public string link { get; set; }
+    /// <summary>
+    /// Set to true if doc.GetElement returns null
+    /// </summary>
+    //public bool missingInBim { get; set; }
 
     /// <summary>
     /// Default constructor for JSON deserialisation
