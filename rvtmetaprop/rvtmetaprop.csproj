@@ -64,6 +64,7 @@
     <Compile Include="EasyCsv.cs" />
     <Compile Include="JtWindowHandle.cs" />
     <Compile Include="MetaProp.cs" />
+    <Compile Include="ParamDef.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

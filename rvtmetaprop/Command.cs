@@ -178,6 +178,71 @@ namespace rvtmetaprop
         m => null == doc.GetElement(
           m.externalId ) );
 
+      // Create dictionary mapping parameter name to 
+      // shared parameter definition input data
+
+      Dictionary<string, ParamDef> paramdefs 
+        = new Dictionary<string, ParamDef>();
+
+      foreach( MetaProp m in props )
+      {
+        string s = m.displayName;
+
+        if(!paramdefs.ContainsKey(s))
+        {
+          paramdefs.Add( s, new ParamDef( m ) );
+        }
+
+        ParamDef def = paramdefs[s];
+
+        Element e = doc.GetElement( m.externalId );
+        Category cat = e.Category;
+        ElementId id = cat.Id;
+
+        if(!def.Categories.Contains(id))
+        {
+          def.Categories.Add( id );
+        }
+
+        // Check for existing parameters
+
+        IList<Parameter> a = e.GetParameters( m.displayName );
+
+        n = a.Count;
+
+        if( 0 < n )
+        {
+          // Property already exists on element
+
+          if( 1 < n )
+          {
+            Debug.Print( string.Format(
+              "{0} already has {1} parameters named {2}",
+              m.component, n, m.displayName ) );
+          }
+
+          foreach( Parameter p in a )
+          {
+            Definition pdef = p.Definition;
+            ParameterType ptyp = pdef.ParameterType;
+            if( def.Type != ptyp )
+            {
+              Debug.Print( string.Format(
+                "{0} parameter {1} has type {2} != meta property type {3}",
+                m.component, m.displayName, ptyp.ToString(), m.metaType ) );
+            }
+            else
+            {
+              //p.Set( m.displayValue );
+            }
+          }
+        }
+        else
+        {
+          // Property needs to be added to element
+        }
+      }
+
       // Apply meta properties to model
 
       using( Transaction tx = new Transaction( doc ) )

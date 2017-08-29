@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Autodesk.Revit.DB;
 
 namespace rvtmetaprop
 {
@@ -55,6 +56,10 @@ namespace rvtmetaprop
       }
     }
 
+    /// <summary>
+    /// Predicate indicating this is a Forge model
+    /// property with no corresponding BIM element.
+    /// </summary>
     public bool IsModelProperty
     {
       get
@@ -63,6 +68,50 @@ namespace rvtmetaprop
       }
     }
 
+    /// <summary>
+    /// Return the appropriate Revit parameter type to
+    /// create a shared parameter.
+    /// </summary>
+    public ParameterType ParameterType
+    {
+      get
+      {
+        // metaType has one of the following values: 
+        // DeleteOverride, File, Link, Text
+
+        if( metaType.Equals( "Text" ) )
+        {
+          return ParameterType.Text;
+        }
+        if( metaType.Equals( "Int" ) )
+        {
+          return ParameterType.Integer;
+        }
+        if( metaType.Equals( "Double" ) )
+        {
+          return ParameterType.Number;
+        }
+        if( metaType.Equals( "Link" ) )
+        {
+          return ParameterType.Text;
+        }
+        if( metaType.Equals( "File" ) )
+        {
+          return ParameterType.Text;
+        }
+        if( metaType.Equals( "DeleteOverride" ) )
+        {
+          return ParameterType.Invalid;
+        }
+        Debug.Assert( false, "unexpected metaType" );
+        return ParameterType.Invalid;
+      }
+    }
+
+    /// <summary>
+    /// Return the appropriate value to populate
+    /// a Revit shared parameter.
+    /// </summary>
     public object ParameterValue
     {
       get
