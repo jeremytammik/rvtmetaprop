@@ -351,9 +351,9 @@ namespace rvtmetaprop
 
             IList<Parameter> a = e.GetParameters( m.displayName );
 
-            n = a.Count;
+            n = a.Count; // may be zero if shared param creation failed
 
-            Debug.Assert( 1 == n, "expected one single parameter of this name; all others are skipped" );
+            Debug.Assert( 0 == n || 1 == n, "expected one single parameter of this name; all others are skipped" );
 
             foreach( Parameter p in a )
             {
