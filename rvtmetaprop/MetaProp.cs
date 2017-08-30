@@ -187,9 +187,12 @@ namespace rvtmetaprop
         {
           p.Set( i );
         }
-        Debug.Assert( false,
-          "invalid int property value "
-          + displayValue );
+        else
+        {
+          Debug.Assert( false,
+            "invalid int property value "
+            + displayValue );
+        }
       }
       else if( metaType.Equals( "Double" ) )
       {
@@ -198,9 +201,12 @@ namespace rvtmetaprop
         {
           p.Set( d );
         }
-        Debug.Assert( false,
-          "invalid double property value "
-          + displayValue );
+        else
+        {
+          Debug.Assert( false,
+            "invalid double property value "
+            + displayValue );
+        }
       }
       else
       {
