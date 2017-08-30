@@ -17,6 +17,7 @@ namespace rvtmetaprop
   [Transaction( TransactionMode.Manual )]
   public class Command : IExternalCommand
   {
+    #region Create shared parameters
     /// <summary>
     /// Shared parameters filename; used only in case
     /// none is set.
@@ -119,12 +120,17 @@ namespace rvtmetaprop
 
       app.SharedParametersFilename = saveSharedParamsFileName;
     }
+    #endregion // Create shared parameters
 
     public Result Execute(
       ExternalCommandData commandData,
       ref string message,
       ElementSet elements )
     {
+      UIApplication uiapp = commandData.Application;
+      UIDocument uidoc = uiapp.ActiveUIDocument;
+      Document doc = uidoc.Document;
+
       List<string> log = new List<string>();
 
       int n;
@@ -174,6 +180,8 @@ namespace rvtmetaprop
 
       #endregion // Deserialise meta properties from input file
 
+      #region Remove 'Model' properties
+
       // Special 'Model' properties have extenalId prefix 'doc_'
 
       IEnumerable<MetaProp> doc_props
@@ -187,11 +195,11 @@ namespace rvtmetaprop
 
       props.RemoveAll( m => m.IsModelProperty );
 
-      // Test that original elements are present in model
+      #endregion // Remove 'Model' properties
 
-      UIApplication uiapp = commandData.Application;
-      UIDocument uidoc = uiapp.ActiveUIDocument;
-      Document doc = uidoc.Document;
+      #region Determine missing elements
+
+      // Test that original elements are present in model
 
       IEnumerable<MetaProp> missing
         = props.Where<MetaProp>( m
@@ -221,6 +229,10 @@ namespace rvtmetaprop
       props.RemoveAll(
         m => null == doc.GetElement(
           m.externalId ) );
+
+      #endregion // Determine missing elements
+
+      #region Determine parameters to use
 
       // Determine what existing properties can be used;
       // for new ones, create dictionary mapping parameter 
@@ -299,9 +311,13 @@ namespace rvtmetaprop
         }
       }
 
+      #endregion // Determine parameters to use
+
       using( TransactionGroup tg = new TransactionGroup( doc ) )
       {
         tg.SetName( "Import Forge Meta Properties" );
+
+        #region Create required shared parameter bindings
 
         // Create required shared parameter bindings
 
@@ -316,6 +332,10 @@ namespace rvtmetaprop
           }
         }
 
+        #endregion // Create required shared parameter bindings
+
+        #region Import Forge meta properties to parameter values
+
         // Set meta properties on elements
 
         using( Transaction tx = new Transaction( doc ) )
@@ -325,7 +345,7 @@ namespace rvtmetaprop
           {
             log.Add( string.Format(
               "Set {0} property {1} = '{2}'", m.component,
-              m.displayName, m.ParameterValue ) );
+              m.displayName, m.DisplayString ) );
 
             Element e = doc.GetElement( m.externalId );
 
@@ -342,6 +362,10 @@ namespace rvtmetaprop
           }
           tx.Commit();
         }
+        #endregion // Import Forge meta properties to parameter values
+
+        tg.Assimilate();
+        tg.Commit();
       }
 
       filename = Path.Combine( Path.GetDirectoryName(

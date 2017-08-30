@@ -129,38 +129,16 @@ namespace rvtmetaprop
     /// Return the appropriate value to populate
     /// a Revit shared parameter.
     /// </summary>
-    public string ParameterValue
+    public string DisplayString
     {
       get
       {
-        if( metaType.Equals( "Text" ) )
+        if( metaType.Equals( "Text" )
+          || metaType.Equals( "Int" )
+          || metaType.Equals( "Double" ) )
         {
           return displayValue;
         }
-        //if( metaType.Equals( "Int" ) )
-        //{
-        //  int i;
-        //  if( int.TryParse( displayValue, out i ) )
-        //  {
-        //    return i;
-        //  }
-        //  Debug.Assert( false,
-        //    "invalid int property value "
-        //    + displayValue );
-        //  return 0;
-        //}
-        //if( metaType.Equals( "Double" ) )
-        //{
-        //  double d;
-        //  if( double.TryParse( displayValue, out d ) )
-        //  {
-        //    return d;
-        //  }
-        //  Debug.Assert( false,
-        //    "invalid double property value "
-        //    + displayValue );
-        //  return 0.0;
-        //}
         if( metaType.Equals( "Link" ) )
         {
           return "link:" + displayValue + ":" + link;
@@ -171,7 +149,7 @@ namespace rvtmetaprop
         }
         if( metaType.Equals( "DeleteOverride" ) )
         {
-          return string.Empty;
+          return "<delete>";
         }
         Debug.Assert( false, "unexpected metaType" );
         return string.Empty;
@@ -200,7 +178,7 @@ namespace rvtmetaprop
         || metaType.Equals( "Link" )
         || metaType.Equals( "File" ) )
       {
-        p.Set( ParameterValue );
+        p.Set( DisplayString );
       }
       else if( metaType.Equals( "Int" ) )
       {
@@ -224,7 +202,10 @@ namespace rvtmetaprop
           "invalid double property value "
           + displayValue );
       }
-      Debug.Assert( false, "unexpected metaType" );
+      else
+      {
+        Debug.Assert( false, "unexpected metaType " + metaType );
+      }
     }
   }
 }
