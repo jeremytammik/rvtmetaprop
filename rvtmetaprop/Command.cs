@@ -206,103 +206,109 @@ namespace rvtmetaprop
         m => null == doc.GetElement(
           m.externalId ) );
 
+      // Determine what existing properties can be used;
+      // for new ones, create dictionary mapping parameter 
+      // name to shared parameter definition input data
+
+      Dictionary<string, ParamDef> paramdefs
+      = new Dictionary<string, ParamDef>();
+
+      foreach( MetaProp m in props )
+      {
+        m.CanSet = false;
+
+        string s = m.displayName;
+
+        // Check for existing parameters
+
+        Element e = doc.GetElement( m.externalId );
+        IList<Parameter> a = e.GetParameters( m.displayName );
+
+        n = a.Count;
+
+        if( 0 < n )
+        {
+          // Property already exists on element
+
+          if( 1 < n )
+          {
+            log.Add( string.Format(
+              "Error: {0} already has {1} parameters named {2}",
+              m.component, n, m.displayName ) );
+          }
+          else
+          {
+            foreach( Parameter p in a )
+            {
+              Definition pdef = p.Definition;
+              ExternalDefinition extdef = pdef as ExternalDefinition;
+              InternalDefinition intdef = pdef as InternalDefinition;
+              log.Add( string.Format( "extdef {0}, intdef {1}",
+                null == extdef ? "<null>" : "ok",
+                null == intdef ? "<null>" : "ok" ) );
+
+              ParameterType ptyp = pdef.ParameterType;
+              if( m.ParameterType != ptyp )
+              {
+                log.Add( string.Format(
+                  "Error: {0} parameter {1} has type {2} != meta property type {3}",
+                  m.component, m.displayName, ptyp.ToString(), m.metaType ) );
+              }
+              else
+              {
+                //p.Set( m.ParameterValue );
+                m.CanSet = true;
+              }
+            }
+          }
+        }
+        else
+        {
+          // Property needs to be added to element
+
+          if( !paramdefs.ContainsKey( s ) )
+          {
+            paramdefs.Add( s, new ParamDef( m ) );
+          }
+
+          ParamDef def = paramdefs[s];
+
+          Category cat = e.Category;
+
+          if( !def.Categories.Contains( cat ) )
+          {
+            def.Categories.Insert( cat );
+          }
+          m.CanSet = true;
+        }
+      }
 
       using( TransactionGroup tg = new TransactionGroup( doc ) )
       {
         tg.SetName( "Import Forge Meta Properties" );
 
-        // Set all existing property values; for new ones,
-        // create dictionary mapping parameter name to 
-        // shared parameter definition input data
-
-        Dictionary<string, ParamDef> paramdefs
-        = new Dictionary<string, ParamDef>();
-
-        using( Transaction tx = new Transaction( doc ) )
-        {
-          tx.Start( "set Existing Property Values" );
-
-          foreach( MetaProp m in props )
-          {
-            string s = m.displayName;
-
-            // Check for existing parameters
-
-            Element e = doc.GetElement( m.externalId );
-            IList<Parameter> a = e.GetParameters( m.displayName );
-
-            n = a.Count;
-
-            if( 0 < n )
-            {
-              // Property already exists on element
-
-              if( 1 < n )
-              {
-                log.Add( string.Format(
-                  "Error: {0} already has {1} parameters named {2}",
-                  m.component, n, m.displayName ) );
-              }
-              else
-              {
-                foreach( Parameter p in a )
-                {
-                  Definition pdef = p.Definition;
-                  ExternalDefinition extdef = pdef as ExternalDefinition;
-                  InternalDefinition intdef = pdef as InternalDefinition;
-                  log.Add( string.Format( "extdef {0}, intdef {1}",
-                    null == extdef ? "<null>" : "ok",
-                    null == intdef ? "<null>" : "ok" ) );
-
-                  ParameterType ptyp = pdef.ParameterType;
-                  if( m.ParameterType != ptyp )
-                  {
-                    log.Add( string.Format(
-                      "Error: {0} parameter {1} has type {2} != meta property type {3}",
-                      m.component, m.displayName, ptyp.ToString(), m.metaType ) );
-                  }
-                  else
-                  {
-                    p.Set( m.displayValue );
-                  }
-                }
-              }
-            }
-            else
-            {
-              // Property needs to be added to element
-
-              if( !paramdefs.ContainsKey( s ) )
-              {
-                paramdefs.Add( s, new ParamDef( m ) );
-              }
-
-              ParamDef def = paramdefs[s];
-
-              Category cat = e.Category;
-
-              if( !def.Categories.Contains( cat ) )
-              {
-                def.Categories.Insert( cat );
-              }
-            }
-          }
-          tx.Commit();
-        }
-
         // Create required shared parameter bindings
 
-        CreateSharedParameters( doc, paramdefs );
+        if( 0 < paramdefs.Count )
+        {
+          using( Transaction tx = new Transaction( doc ) )
+          {
+            tx.Start( "creating Shared Parameters" );
 
-        // Set new properties in shared parameters
+            CreateSharedParameters( doc, paramdefs );
+            tx.Commit();
+          }
+        }
+
+        // Set meta properties on elements
 
         using( Transaction tx = new Transaction( doc ) )
         {
           tx.Start( "Import Forge Meta Properties" );
-          foreach( MetaProp m in props )
+          foreach( MetaProp m in props.Where<MetaProp>( m => m.CanSet ) )
           {
             log.Add( string.Format(
-              "{0} property {1} = '{2}'", m.component,
+              "Set {0} property {1} = '{2}'", m.component,
               m.displayName, m.ParameterValue ) );
 
             Element e = doc.GetElement( m.externalId );
@@ -311,50 +317,24 @@ namespace rvtmetaprop
 
             n = a.Count;
 
-            if( 0 < n )
+            Debug.Assert( 1 == n, "expected one single parameter of this name; all others are skipped" );
+
+            foreach( Parameter p in a )
             {
-              // Property already exists on element
-
-              if( 1 < n )
-              {
-                log.Add( string.Format(
-                  "{0} has {1} parameters named {2}",
-                  m.component, n, m.displayName ) );
-              }
-
-              foreach( Parameter p in a )
-              {
-                Definition pdef = p.Definition;
-                ParameterType ptyp = pdef.ParameterType;
-                if( ParameterType.Text != ptyp )
-                {
-                  log.Add( string.Format(
-                    "{0} parameter {1} has type {2}",
-                    m.component, m.displayName, ptyp.ToString() ) );
-                }
-                else
-                {
-                  // add support for int and double
-                  p.Set( m.displayValue );
-                }
-              }
-            }
-            else
-            {
-              // Property needs to be added to element
-
+              m.SetValue( p );
             }
           }
           tx.Commit();
         }
-        tg.Assimilate();
-        tg.Commit();
       }
 
-      filename = Path.Combine( Path.GetDirectoryName( 
-        Assembly.GetExecutingAssembly().Location ), 
+      filename = Path.Combine( Path.GetDirectoryName(
+        Assembly.GetExecutingAssembly().Location ),
         "rvtmetaprop.log" );
-      File.AppendAllText( filename, string.Join( "\r\n", log ) );
+
+      File.AppendAllText( filename, 
+        string.Join( "\r\n", log ) );
+
       Process.Start( filename );
 
       return Result.Succeeded;

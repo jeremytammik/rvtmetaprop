@@ -7,15 +7,32 @@ namespace rvtmetaprop
 {
   class MetaProp
   {
+    /// <summary>
+    /// Predicate indicating we can set this property
+    /// </summary>
+    public bool CanSet { get; set; }
+
     public string externalId { get; set; }
+
     public string component { get; set; }
+
     public string displayCategory { get; set; }
+
     public string displayName { get; set; }
+
     public string displayValue { get; set; }
+
+    /// <summary>
+    /// metaType has one of the following values: 
+    /// DeleteOverride, File, Link, Text, Int, Double
+    /// </summary>
     public string metaType { get; set; }
     public string filelink { get; set; }
+
     public string filename { get; set; }
+
     public string link { get; set; }
+
     /// <summary>
     /// Set to true if doc.GetElement returns null
     /// </summary>
@@ -26,6 +43,7 @@ namespace rvtmetaprop
     /// </summary>
     public MetaProp()
     {
+      CanSet = false;
     }
 
     /// <summary>
@@ -35,6 +53,8 @@ namespace rvtmetaprop
     /// </summary>
     public MetaProp( IList<string> record )
     {
+      CanSet = false;
+
       int n = record.Count;
       //Debug.Print( n.ToString() );
       if( 7 != n && 8 != n && 9 != n )
@@ -109,41 +129,38 @@ namespace rvtmetaprop
     /// Return the appropriate value to populate
     /// a Revit shared parameter.
     /// </summary>
-    public object ParameterValue
+    public string ParameterValue
     {
       get
       {
-        // metaType has one of the following values: 
-        // DeleteOverride, File, Link, Text
-
         if( metaType.Equals( "Text" ) )
         {
           return displayValue;
         }
-        if( metaType.Equals( "Int" ) )
-        {
-          int i;
-          if( int.TryParse( displayValue, out i ) )
-          {
-            return i;
-          }
-          Debug.Assert( false,
-            "invalid int property value "
-            + displayValue );
-          return 0;
-        }
-        if( metaType.Equals( "Double" ) )
-        {
-          double d;
-          if( double.TryParse( displayValue, out d ) )
-          {
-            return d;
-          }
-          Debug.Assert( false,
-            "invalid double property value "
-            + displayValue );
-          return 0.0;
-        }
+        //if( metaType.Equals( "Int" ) )
+        //{
+        //  int i;
+        //  if( int.TryParse( displayValue, out i ) )
+        //  {
+        //    return i;
+        //  }
+        //  Debug.Assert( false,
+        //    "invalid int property value "
+        //    + displayValue );
+        //  return 0;
+        //}
+        //if( metaType.Equals( "Double" ) )
+        //{
+        //  double d;
+        //  if( double.TryParse( displayValue, out d ) )
+        //  {
+        //    return d;
+        //  }
+        //  Debug.Assert( false,
+        //    "invalid double property value "
+        //    + displayValue );
+        //  return 0.0;
+        //}
         if( metaType.Equals( "Link" ) )
         {
           return "link:" + displayValue + ":" + link;
@@ -159,6 +176,55 @@ namespace rvtmetaprop
         Debug.Assert( false, "unexpected metaType" );
         return string.Empty;
       }
+    }
+
+    /// <summary>
+    /// Populate a Revit shared parameter value.
+    /// </summary>
+    public void SetValue( Parameter p )
+    {
+      StorageType st = p.StorageType;
+
+      if( metaType.Equals( "DeleteOverride" ) )
+      {
+        switch( st )
+        {
+          case StorageType.Double: p.Set( 0.0 ); break;
+          case StorageType.ElementId: p.Set( ElementId.InvalidElementId ); break;
+          case StorageType.Integer: p.Set( 0 ); break;
+          case StorageType.String: p.Set( string.Empty ); break;
+          default: Debug.Assert( false, "cannot set this storage type:" + st.ToString() ); break;
+        }
+      }
+      else if( metaType.Equals( "Text" )
+        || metaType.Equals( "Link" )
+        || metaType.Equals( "File" ) )
+      {
+        p.Set( ParameterValue );
+      }
+      else if( metaType.Equals( "Int" ) )
+      {
+        int i;
+        if( int.TryParse( displayValue, out i ) )
+        {
+          p.Set( i );
+        }
+        Debug.Assert( false,
+          "invalid int property value "
+          + displayValue );
+      }
+      else if( metaType.Equals( "Double" ) )
+      {
+        double d;
+        if( double.TryParse( displayValue, out d ) )
+        {
+          p.Set( d );
+        }
+        Debug.Assert( false,
+          "invalid double property value "
+          + displayValue );
+      }
+      Debug.Assert( false, "unexpected metaType" );
     }
   }
 }
