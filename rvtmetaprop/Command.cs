@@ -17,30 +17,33 @@ namespace rvtmetaprop
   public class Command : IExternalCommand
   {
     /// <summary>
+    /// Shared parameters filename; used only in case
+    /// none is set.
+    /// </summary>
+    const string _shared_parameters_filename
+      = "rvtmetaprop_shared_parameters.txt";
+
+    /// <summary>
     /// Create the shared parameters.
     /// </summary>
     static void CreateSharedParameters(
       Document doc,
       Dictionary<string, ParamDef> paramdefs )
     {
-      /// <summary>
-      /// Shared parameters filename; used only in case
-      /// none is set.
-      /// </summary>
-      const string _shared_parameters_filename
-        = "shared_parameters.txt";
-
       Application app = doc.Application;
 
-      // Retrieve shared parameter file name
+      string path;
 
-      string sharedParamsFileName
+      // Save original shared parameter file name
+
+      string saveSharedParamsFileName
         = app.SharedParametersFilename;
 
-      if( null == sharedParamsFileName
-        || 0 == sharedParamsFileName.Length )
+      if( true )
+        //null == sharedParamsFileName
+        //|| 0 == sharedParamsFileName.Length
       {
-        string path = Path.GetTempPath();
+        path = Path.GetTempPath();
 
         path = Path.Combine( path,
           _shared_parameters_filename );
@@ -51,8 +54,7 @@ namespace rvtmetaprop
 
         app.SharedParametersFilename = path;
 
-        sharedParamsFileName
-          = app.SharedParametersFilename;
+        path = app.SharedParametersFilename;
       }
 
       // Retrieve shared parameter file object
@@ -99,6 +101,10 @@ namespace rvtmetaprop
         doc.ParameterBindings.Insert( definition, binding,
           BuiltInParameterGroup.PG_GENERAL );
       }
+
+      // Restore original 
+
+      app.SharedParametersFilename = saveSharedParamsFileName;
     }
 
     public Result Execute(
