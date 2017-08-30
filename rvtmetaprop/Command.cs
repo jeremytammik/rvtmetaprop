@@ -81,13 +81,7 @@ namespace rvtmetaprop
       ref string message,
       ElementSet elements )
     {
-      string folder = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location );
-      string filename = "rvtmetaprop";
-      //SimpleLog.FileName = filename;
-      //SimpleLog.Extension = "log";
-      //SimpleLog.SetLogDir( folder );
-      //SimpleLog.WriteText = 
-      SimpleLog.SetLogFile( logDir: folder, prefix: filename, writeText: true );
+      List<string> log = new List<string>();
 
       int n;
 
@@ -115,7 +109,7 @@ namespace rvtmetaprop
         props = JsonConvert
           .DeserializeObject<List<MetaProp>>( s );
 
-        SimpleLog.Log( props.Count + " props deserialised" );
+        log.Add( props.Count + " props deserialised" );
       }
       else if( _filename.ToLower().EndsWith( ".csv" ) )
       {
@@ -123,7 +117,7 @@ namespace rvtmetaprop
           = EasyCsv.FromFile( _filename, true );
 
         n = a.Count();
-        SimpleLog.Log( n + " props deserialised" );
+        log.Add( n + " props deserialised" );
         props = new List<MetaProp>( n );
         foreach( IList<string> rec in a )
         {
@@ -147,7 +141,7 @@ namespace rvtmetaprop
 
       int nModelProp = doc_props.Count<MetaProp>();
 
-      SimpleLog.Log( nModelProp.ToString()
+      log.Add( nModelProp.ToString()
         + " 'Model' properties have extenalId prefix 'doc_'" );
 
       props.RemoveAll( m => m.IsModelProperty );
@@ -225,7 +219,7 @@ namespace rvtmetaprop
 
           if( 1 < n )
           {
-            SimpleLog.Log( string.Format(
+            log.Add( string.Format(
               "{0} already has {1} parameters named {2}",
               m.component, n, m.displayName ) );
           }
@@ -235,14 +229,14 @@ namespace rvtmetaprop
             Definition pdef = p.Definition;
             ExternalDefinition extdef = pdef as ExternalDefinition;
             InternalDefinition intdef = pdef as InternalDefinition;
-            SimpleLog.Log( string.Format( "extdef {0}, intdef {1}",
+            log.Add( string.Format( "extdef {0}, intdef {1}",
               null == extdef ? "<null>" : "ok",
               null == intdef ? "<null>" : "ok" ) );
 
             ParameterType ptyp = pdef.ParameterType;
             if( def.Type != ptyp )
             {
-              SimpleLog.Log( string.Format(
+              log.Add( string.Format(
                 "{0} parameter {1} has type {2} != meta property type {3}",
                 m.component, m.displayName, ptyp.ToString(), m.metaType ) );
             }
@@ -267,7 +261,7 @@ namespace rvtmetaprop
         tx.Start( "Import Forge Meta Properties" );
         foreach( MetaProp m in props )
         {
-          SimpleLog.Log( string.Format(
+          log.Add( string.Format(
             "{0} property {1} = '{2}'", m.component,
             m.displayName, m.ParameterValue ) );
 
@@ -283,7 +277,7 @@ namespace rvtmetaprop
 
             if( 1 < n )
             {
-              SimpleLog.Log( string.Format(
+              log.Add( string.Format(
                 "{0} has {1} parameters named {2}",
                 m.component, n, m.displayName ) );
             }
@@ -294,7 +288,7 @@ namespace rvtmetaprop
               ParameterType ptyp = pdef.ParameterType;
               if( ParameterType.Text != ptyp )
               {
-                SimpleLog.Log( string.Format(
+                log.Add( string.Format(
                   "{0} parameter {1} has type {2}",
                   m.component, m.displayName, ptyp.ToString() ) );
               }
@@ -313,7 +307,13 @@ namespace rvtmetaprop
         }
         tx.Commit();
       }
-      SimpleLog.ShowLogFile();
+
+      string filename = Path.Combine( Path.GetDirectoryName( 
+        Assembly.GetExecutingAssembly().Location ), 
+        "rvtmetaprop.log" );
+      File.AppendAllText( filename, string.Join( "\r\n", log ) );
+      Process.Start( filename );
+
       return Result.Succeeded;
     }
   }
