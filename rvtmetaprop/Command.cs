@@ -315,7 +315,7 @@ namespace rvtmetaprop
 
       using( TransactionGroup tg = new TransactionGroup( doc ) )
       {
-        tg.SetName( "Import Forge Meta Properties" );
+        tg.Start( "Import Forge Meta Properties" );
 
         #region Create required shared parameter bindings
 
@@ -325,7 +325,7 @@ namespace rvtmetaprop
         {
           using( Transaction tx = new Transaction( doc ) )
           {
-            tx.Start( "creating Shared Parameters" );
+            tx.Start( "Create Shared Parameters" );
 
             CreateSharedParameters( doc, paramdefs, log );
             tx.Commit();
@@ -365,7 +365,7 @@ namespace rvtmetaprop
         #endregion // Import Forge meta properties to parameter values
 
         tg.Assimilate();
-        tg.Commit();
+        //tg.Commit();
       }
 
       filename = Path.Combine( Path.GetDirectoryName(
