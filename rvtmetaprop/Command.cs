@@ -30,9 +30,6 @@ namespace rvtmetaprop
       const string _shared_parameters_filename
         = "shared_parameters.txt";
 
-      //const string _definition_group_name
-      //  = "ForgeMaterial";
-
       Application app = doc.Application;
 
       // Retrieve shared parameter file name
