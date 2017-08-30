@@ -181,14 +181,14 @@ namespace rvtmetaprop
       // Create dictionary mapping parameter name to 
       // shared parameter definition input data
 
-      Dictionary<string, ParamDef> paramdefs 
+      Dictionary<string, ParamDef> paramdefs
         = new Dictionary<string, ParamDef>();
 
       foreach( MetaProp m in props )
       {
         string s = m.displayName;
 
-        if(!paramdefs.ContainsKey(s))
+        if( !paramdefs.ContainsKey( s ) )
         {
           paramdefs.Add( s, new ParamDef( m ) );
         }
@@ -199,7 +199,7 @@ namespace rvtmetaprop
         Category cat = e.Category;
         ElementId id = cat.Id;
 
-        if(!def.Categories.Contains(id))
+        if( !def.Categories.Contains( id ) )
         {
           def.Categories.Add( id );
         }
@@ -224,6 +224,12 @@ namespace rvtmetaprop
           foreach( Parameter p in a )
           {
             Definition pdef = p.Definition;
+            ExternalDefinition extdef = pdef as ExternalDefinition;
+            InternalDefinition intdef = pdef as InternalDefinition;
+            Debug.Print( string.Format( "extdef {0}, intdef {1}",
+              null == extdef ? "<null>" : "ok",
+              null == intdef ? "<null>" : "ok" ) );
+
             ParameterType ptyp = pdef.ParameterType;
             if( def.Type != ptyp )
             {
@@ -243,6 +249,8 @@ namespace rvtmetaprop
         }
       }
 
+      // Create required shared parameters
+
       // Apply meta properties to model
 
       using( Transaction tx = new Transaction( doc ) )
@@ -250,8 +258,8 @@ namespace rvtmetaprop
         tx.Start( "Import Forge Meta Properties" );
         foreach( MetaProp m in props )
         {
-          Debug.Print( string.Format( 
-            "{0} property {1} = '{2}'", m.component, 
+          Debug.Print( string.Format(
+            "{0} property {1} = '{2}'", m.component,
             m.displayName, m.ParameterValue ) );
 
           Element e = doc.GetElement( m.externalId );
