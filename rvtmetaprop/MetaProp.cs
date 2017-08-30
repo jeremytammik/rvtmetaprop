@@ -37,7 +37,7 @@ namespace rvtmetaprop
     {
       int n = record.Count;
       //Debug.Print( n.ToString() );
-      if( 8 != n && 9 != n )
+      if( 7 != n && 8 != n && 9 != n )
       {
         throw new ArgumentException(
           "Expected nine fields in CSV file record." );
@@ -49,11 +49,8 @@ namespace rvtmetaprop
       displayValue = record[4];
       metaType = record[5];
       filelink = record[6];
-      filename = record[7];
-      if( 9 == n )
-      {
-        link = record[8];
-      }
+      if( 8 == n ) { filename = record[7]; }
+      if( 9 == n ) { link = record[8]; }
     }
 
     /// <summary>
