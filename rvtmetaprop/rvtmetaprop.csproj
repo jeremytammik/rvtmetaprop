@@ -65,6 +65,7 @@
     <Compile Include="CmdSettings.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="EasyCsv.cs" />
+    <Compile Include="FileSelector.cs" />
     <Compile Include="JtWindowHandle.cs" />
     <Compile Include="MetaProp.cs" />
     <Compile Include="ParamDef.cs" />

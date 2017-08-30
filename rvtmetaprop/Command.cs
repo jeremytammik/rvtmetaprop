@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using Newtonsoft.Json;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Reflection;
+using Autodesk.Revit.ApplicationServices;
 #endregion
 
 namespace rvtmetaprop
@@ -16,65 +16,93 @@ namespace rvtmetaprop
   [Transaction( TransactionMode.Manual )]
   public class Command : IExternalCommand
   {
-    #region Input File Handling
-
-#if DEBUG
-    static string _default_folder = "C:/a/vs/rvtmetaprop/test";
-#else
-    static string _default_folder = "";
-#endif // _DEBUG
-
-
-    static string _filename = "";
-
     /// <summary>
-    /// Select a specified file in the given folder.
+    /// Create the shared parameters.
     /// </summary>
-    /// <param name="folder">Initial folder.</param>
-    /// <param name="filename">Selected filename on 
-    /// success.</param>
-    /// <returns>Return true if a file was successfully 
-    /// selected.</returns>
-    static bool FileSelect(
-      string folder,
-      string title,
-      string filter,
-      ref string filename )
+    static void CreateSharedParameters(
+      Document doc,
+      Dictionary<string, ParamDef> paramdefs )
     {
-      bool rc = false;
-      using( OpenFileDialog dlg = new OpenFileDialog() )
+      /// <summary>
+      /// Shared parameters filename; used only in case
+      /// none is set.
+      /// </summary>
+      const string _shared_parameters_filename
+        = "shared_parameters.txt";
+
+      //const string _definition_group_name
+      //  = "ForgeMaterial";
+
+      Application app = doc.Application;
+
+      // Retrieve shared parameter file name
+
+      string sharedParamsFileName
+        = app.SharedParametersFilename;
+
+      if( null == sharedParamsFileName
+        || 0 == sharedParamsFileName.Length )
       {
-        dlg.Title = title;
-        dlg.CheckFileExists = true;
-        dlg.CheckPathExists = true;
-        dlg.InitialDirectory = folder;
-        dlg.FileName = filename;
-        dlg.Filter = filter;
-        rc = ( DialogResult.OK == dlg.ShowDialog() );
-        filename = dlg.FileName;
-      }
-      return rc;
-    }
+        string path = Path.GetTempPath();
 
-    /// <summary>
-    /// Select a meta property file in the given folder.
-    /// </summary>
-    /// <param name="folder">Initial folder.</param>
-    /// <param name="filename">Selected filename on 
-    /// success.</param>
-    /// <returns>Return true if a file was successfully 
-    /// selected.</returns>
-    static public bool FileSelectMetaProp(
-      string folder,
-      ref string filename )
-    {
-      return FileSelect( folder,
-        "Select meta property file",
-        //"CSV Files (*.csv)|*.csv|JSON Files (*.json)|*.json|All Files|*.*",
-        "Meta Property Files (*.csv;*.json)|*.csv;*.json|All Files|*.*",
-        ref filename );
+        path = Path.Combine( path,
+          _shared_parameters_filename );
+
+        StreamWriter stream;
+        stream = new StreamWriter( path );
+        stream.Close();
+
+        app.SharedParametersFilename = path;
+
+        sharedParamsFileName
+          = app.SharedParametersFilename;
+      }
+
+      // Retrieve shared parameter file object
+
+      DefinitionFile f
+        = app.OpenSharedParameterFile();
+
+      //using( Transaction t = new Transaction( doc ) )
+      //{
+      //  t.Start( "Create Shared Parameters" );
+
+      List<string> keys = new List<string>( paramdefs.Keys );
+      keys.Sort();
+      foreach( string pname in keys )
+      {
+        ParamDef def = paramdefs[pname];
+
+        // Create the category set for binding
+
+        Binding binding = app.Create.NewInstanceBinding( def.Categories );
+
+        // Retrieve or create shared parameter group
+
+        DefinitionGroup group
+          = f.Groups.get_Item( def.GroupName )
+          ?? f.Groups.Create( def.GroupName );
+
+        // Retrieve or create the parameter;
+        // we could check if they are already bound, 
+        // but it looks like Insert will just ignore 
+        // them in that case.
+
+        Definition definition = group.Definitions.get_Item( pname );
+
+        if( null == definition )
+        {
+          ExternalDefinitionCreationOptions opt
+            = new ExternalDefinitionCreationOptions(
+              pname, def.Type );
+
+          definition = group.Definitions.Create( opt );
+        }
+
+        doc.ParameterBindings.Insert( definition, binding,
+          BuiltInParameterGroup.PG_GENERAL );
+      }
     }
-    #endregion // Input File Handling
 
     public Result Execute(
       ExternalCommandData commandData,
@@ -87,34 +115,31 @@ namespace rvtmetaprop
 
       #region Select meta property input file
 
-      if( !FileSelectMetaProp(
-        _default_folder,
-        ref _filename ) )
+      string filename = "";
+
+      if( !FileSelector.Select( ref filename ) )
       {
         return Result.Cancelled;
       }
-
-      _default_folder = Path.GetDirectoryName( _filename );
-
       #endregion // Select meta property input file
 
       #region Deserialise meta properties from input file
 
       List<MetaProp> props = null;
 
-      if( _filename.ToLower().EndsWith( ".json" ) )
+      if( filename.ToLower().EndsWith( ".json" ) )
       {
-        string s = File.ReadAllText( _filename );
+        string s = File.ReadAllText( filename );
 
         props = JsonConvert
           .DeserializeObject<List<MetaProp>>( s );
 
         log.Add( props.Count + " props deserialised" );
       }
-      else if( _filename.ToLower().EndsWith( ".csv" ) )
+      else if( filename.ToLower().EndsWith( ".csv" ) )
       {
         IEnumerable<IList<string>> a
-          = EasyCsv.FromFile( _filename, true );
+          = EasyCsv.FromFile( filename, true );
 
         n = a.Count();
         log.Add( n + " props deserialised" );
@@ -127,7 +152,7 @@ namespace rvtmetaprop
       else
       {
         message = "Unhandled meta property file format: "
-          + Path.GetExtension( _filename );
+          + Path.GetExtension( filename );
         return Result.Failed;
       }
 
@@ -186,16 +211,16 @@ namespace rvtmetaprop
       {
         tg.SetName( "Import Forge Meta Properties" );
 
+        // Set all existing property values; for new ones,
+        // create dictionary mapping parameter name to 
+        // shared parameter definition input data
+
+        Dictionary<string, ParamDef> paramdefs
+        = new Dictionary<string, ParamDef>();
+
         using( Transaction tx = new Transaction( doc ) )
         {
           tx.Start( "set Existing Property Values" );
-
-          // Set all existing property values; for new ones,
-          // create dictionary mapping parameter name to 
-          // shared parameter definition input data
-
-          Dictionary<string, ParamDef> paramdefs
-          = new Dictionary<string, ParamDef>();
 
           foreach( MetaProp m in props )
           {
@@ -261,11 +286,13 @@ namespace rvtmetaprop
                 def.Categories.Insert( cat );
               }
             }
-            tx.Commit();
           }
+          tx.Commit();
         }
 
         // Create required shared parameter bindings
+
+        CreateSharedParameters( doc, paramdefs );
 
         // Set new properties in shared parameters
 
@@ -324,7 +351,7 @@ namespace rvtmetaprop
         tg.Commit();
       }
 
-      string filename = Path.Combine( Path.GetDirectoryName( 
+      filename = Path.Combine( Path.GetDirectoryName( 
         Assembly.GetExecutingAssembly().Location ), 
         "rvtmetaprop.log" );
       File.AppendAllText( filename, string.Join( "\r\n", log ) );
