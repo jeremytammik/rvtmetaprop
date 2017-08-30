@@ -9,6 +9,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Reflection;
 using Autodesk.Revit.ApplicationServices;
+using System;
 #endregion
 
 namespace rvtmetaprop
@@ -28,7 +29,8 @@ namespace rvtmetaprop
     /// </summary>
     static void CreateSharedParameters(
       Document doc,
-      Dictionary<string, ParamDef> paramdefs )
+      Dictionary<string, ParamDef> paramdefs,
+      List<string> log )
     {
       Application app = doc.Application;
 
@@ -74,7 +76,8 @@ namespace rvtmetaprop
 
         // Create the category set for binding
 
-        Binding binding = app.Create.NewInstanceBinding( def.Categories );
+        Binding binding = app.Create.NewInstanceBinding( 
+          def.Categories );
 
         // Retrieve or create shared parameter group
 
@@ -87,19 +90,29 @@ namespace rvtmetaprop
         // but it looks like Insert will just ignore 
         // them in that case.
 
-        Definition definition = group.Definitions.get_Item( pname );
+        Definition definition = group.Definitions.get_Item( 
+          pname );
 
-        if( null == definition )
+        try
         {
-          ExternalDefinitionCreationOptions opt
-            = new ExternalDefinitionCreationOptions(
-              pname, def.Type );
+          if( null == definition )
+          {
+            ExternalDefinitionCreationOptions opt
+              = new ExternalDefinitionCreationOptions(
+                pname, def.Type );
 
-          definition = group.Definitions.Create( opt );
+            definition = group.Definitions.Create( opt );
+          }
+
+          doc.ParameterBindings.Insert( definition, binding,
+            BuiltInParameterGroup.PG_GENERAL );
         }
-
-        doc.ParameterBindings.Insert( definition, binding,
-          BuiltInParameterGroup.PG_GENERAL );
+        catch( Exception ex )
+        {
+          log.Add( string.Format(
+            "Exception creating shared parameter {0}: {1}",
+            pname, ex.Message ) );
+        }
       }
 
       // Restore original 
@@ -298,7 +311,7 @@ namespace rvtmetaprop
           {
             tx.Start( "creating Shared Parameters" );
 
-            CreateSharedParameters( doc, paramdefs );
+            CreateSharedParameters( doc, paramdefs, log );
             tx.Commit();
           }
         }
