@@ -86,6 +86,19 @@ namespace rvtmetaprop
     }
 
     /// <summary>
+    /// Predicate indicating this is a File or Link
+    /// property not supported in Revit.
+    /// </summary>
+    public bool IsFileOrLinkProperty
+    {
+      get
+      {
+        return metaType.Equals( "File" )
+          || metaType.Equals( "Link" );
+      }
+    }
+
+    /// <summary>
     /// Return the appropriate Revit parameter type to
     /// create a shared parameter.
     /// </summary>

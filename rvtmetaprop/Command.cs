@@ -179,17 +179,22 @@ namespace rvtmetaprop
 
       // Special 'Model' properties have extenalId prefix 'doc_'
 
-      IEnumerable<MetaProp> doc_props
-        = props.Where<MetaProp>( m
-          => m.IsModelProperty );
+      n = props.RemoveAll( m => m.IsModelProperty );
 
-      int nModelProp = doc_props.Count<MetaProp>();
-
-      props.RemoveAll( m => m.IsModelProperty );
-
-      log.Add( nModelProp.ToString()
+      log.Add( n.ToString()
         + " 'Model' properties removed with"
         + " extenalId prefix 'doc_'" );
+
+      #endregion // Remove 'Model' properties
+
+      #region Remove 'File' and 'Link' properties
+
+      // 'File' and 'Link' properties are not supported
+
+      n = props.RemoveAll( m => m.IsFileOrLinkProperty );
+
+      log.Add( n.ToString()
+        + " File and Link properties removed." );
 
       #endregion // Remove 'Model' properties
 
@@ -198,35 +203,45 @@ namespace rvtmetaprop
       // Test that original elements are present in model
 
       IEnumerable<MetaProp> missing
-        = props.Where<MetaProp>( m
-          => null == doc.GetElement( m.externalId ) );
+        = props.Where<MetaProp>( m => null
+          == doc.GetElement( m.externalId ) );
 
-      n = missing.Count<MetaProp>();
+      n = missing.Count();
 
       if( 0 < n )
       {
         string s = string.Format(
-          "{0} invalid unique id{1}: ",
+          "{0} invalid unique id{1}",
           n, ( 1 == n ) ? "" : "s" );
 
+        List<string> uids = new List<string>( missing
+          .Select<MetaProp, string>( m => m.externalId )
+          .Distinct<string>() );
+
+        uids.Sort();
+
+        n = uids.Count;
+
+        s += string.Format(
+          " used in {0} meta propert{1}: ",
+          n, ( 1 == n ) ? "y" : "ies" );
+
         TaskDialog d = new TaskDialog( s );
+
+        log.Add( "Error: " + s );
 
         s = string.Join( "\r\n  ",
           missing.Select<MetaProp, string>(
             m => m.component ) );
 
-        string s2 = "\r\n\r\n" + nModelProp
-          + " model properties ignored";
-
-        d.MainContent = s + s2;
+        d.MainContent = s;
         d.Show();
 
-        props.RemoveAll(
-          m => null == doc.GetElement(
-            m.externalId ) );
+        log.Add( s );
 
-        log.Add( n
-          + " properties on missing element removed:\r\n" + s );
+        props.RemoveAll( m => null
+          == doc.GetElement( m.externalId ) );
+
       }
       #endregion // Determine missing elements
 
