@@ -35,39 +35,30 @@ namespace rvtmetaprop
     {
       Application app = doc.Application;
 
-      string path;
-
       // Save original shared parameter file name
 
       string saveSharedParamsFileName
         = app.SharedParametersFilename;
 
-      if( true )
-      //null == sharedParamsFileName
-      //|| 0 == sharedParamsFileName.Length
-      {
-        path = Path.GetTempPath();
+      // Set up our own shared parameter file name
 
-        path = Path.Combine( path,
-          _shared_parameters_filename );
+      string path = Path.GetTempPath();
 
-        StreamWriter stream;
-        stream = new StreamWriter( path );
-        stream.Close();
+      path = Path.Combine( path,
+        _shared_parameters_filename );
 
-        app.SharedParametersFilename = path;
+      StreamWriter stream;
+      stream = new StreamWriter( path );
+      stream.Close();
 
-        path = app.SharedParametersFilename;
-      }
+      app.SharedParametersFilename = path;
+
+      path = app.SharedParametersFilename;
 
       // Retrieve shared parameter file object
 
       DefinitionFile f
         = app.OpenSharedParameterFile();
-
-      //using( Transaction t = new Transaction( doc ) )
-      //{
-      //  t.Start( "Create Shared Parameters" );
 
       List<string> keys = new List<string>( paramdefs.Keys );
       keys.Sort();
@@ -111,12 +102,12 @@ namespace rvtmetaprop
         catch( Exception ex )
         {
           log.Add( string.Format(
-            "Exception creating shared parameter {0}: {1}",
+            "Error: creating shared parameter '{0}': {1}",
             pname, ex.Message ) );
         }
       }
 
-      // Restore original 
+      // Restore original shared parameter file name 
 
       app.SharedParametersFilename = saveSharedParamsFileName;
     }
@@ -133,6 +124,10 @@ namespace rvtmetaprop
 
       List<string> log = new List<string>();
 
+      log.Add( string.Format(
+        "\r\n\r\n{0:yyyy-MM-dd HH:mm:ss}: rvtmetaprop begin",
+        DateTime.Now ) );
+
       int n;
 
       #region Select meta property input file
@@ -143,6 +138,8 @@ namespace rvtmetaprop
       {
         return Result.Cancelled;
       }
+      log.Add( "Input file selected: " + filename );
+
       #endregion // Select meta property input file
 
       #region Deserialise meta properties from input file
@@ -155,8 +152,6 @@ namespace rvtmetaprop
 
         props = JsonConvert
           .DeserializeObject<List<MetaProp>>( s );
-
-        log.Add( props.Count + " props deserialised" );
       }
       else if( filename.ToLower().EndsWith( ".csv" ) )
       {
@@ -164,7 +159,6 @@ namespace rvtmetaprop
           = EasyCsv.FromFile( filename, true );
 
         n = a.Count();
-        log.Add( n + " props deserialised" );
         props = new List<MetaProp>( n );
         foreach( IList<string> rec in a )
         {
@@ -177,6 +171,7 @@ namespace rvtmetaprop
           + Path.GetExtension( filename );
         return Result.Failed;
       }
+      log.Add( props.Count + " meta properties deserialised" );
 
       #endregion // Deserialise meta properties from input file
 
@@ -190,10 +185,11 @@ namespace rvtmetaprop
 
       int nModelProp = doc_props.Count<MetaProp>();
 
-      log.Add( nModelProp.ToString()
-        + " 'Model' properties have extenalId prefix 'doc_'" );
-
       props.RemoveAll( m => m.IsModelProperty );
+
+      log.Add( nModelProp.ToString()
+        + " 'Model' properties removed with"
+        + " extenalId prefix 'doc_'" );
 
       #endregion // Remove 'Model' properties
 
@@ -215,21 +211,23 @@ namespace rvtmetaprop
 
         TaskDialog d = new TaskDialog( s );
 
-        s = string.Join( "\r\n",
+        s = string.Join( "\r\n  ",
           missing.Select<MetaProp, string>(
             m => m.component ) );
 
-        s += "\r\n\r\n" + nModelProp
+        string s2 = "\r\n\r\n" + nModelProp
           + " model properties ignored";
 
-        d.MainContent = s;
+        d.MainContent = s + s2;
         d.Show();
+
+        props.RemoveAll(
+          m => null == doc.GetElement(
+            m.externalId ) );
+
+        log.Add( n
+          + " properties on missing element removed:\r\n" + s );
       }
-
-      props.RemoveAll(
-        m => null == doc.GetElement(
-          m.externalId ) );
-
       #endregion // Determine missing elements
 
       #region Determine parameters to use
@@ -261,32 +259,32 @@ namespace rvtmetaprop
           if( 1 < n )
           {
             log.Add( string.Format(
-              "Error: {0} already has {1} parameters named {2}",
+              "Error: element <{0}> already has {1} parameters named '{2}'",
               m.component, n, m.displayName ) );
           }
           else
           {
             Parameter p = a[0];
             Definition pdef = p.Definition;
-            ExternalDefinition extdef = pdef as ExternalDefinition;
-            InternalDefinition intdef = pdef as InternalDefinition;
-            log.Add( string.Format( "extdef {0}, intdef {1}",
-              null == extdef ? "<null>" : "ok",
-              null == intdef ? "<null>" : "ok" ) );
+
+            //ExternalDefinition extdef = pdef as ExternalDefinition;
+            //InternalDefinition intdef = pdef as InternalDefinition;
+            //log.Add( string.Format( "extdef {0}, intdef {1}",
+            //  null == extdef ? "<null>" : "ok",
+            //  null == intdef ? "<null>" : "ok" ) );
 
             ParameterType ptyp = pdef.ParameterType;
             if( m.ParameterType != ptyp )
             {
               log.Add( string.Format(
-                "Error: {0} parameter {1} has type {2} != meta property type {3}",
+                "Error: element <{0}> parameter '{1}' has type {2} != meta property type {3}",
                 m.component, m.displayName, ptyp.ToString(), m.metaType ) );
             }
             else if( p.IsReadOnly )
             {
               log.Add( string.Format(
-                "Error: {0} parameter {1} is read-only",
+                "Error: element <{0}> parameter '{1}' is read-only",
                 m.component, m.displayName ) );
-
             }
             else
             {
@@ -315,6 +313,8 @@ namespace rvtmetaprop
         }
       }
 
+      props.RemoveAll( m => !m.CanSet );
+
       #endregion // Determine parameters to use
 
       using( TransactionGroup tg = new TransactionGroup( doc ) )
@@ -325,17 +325,20 @@ namespace rvtmetaprop
 
         // Create required shared parameter bindings
 
-        if( 0 < paramdefs.Count )
+        n = paramdefs.Count;
+
+        if( 0 < n )
         {
           using( Transaction tx = new Transaction( doc ) )
           {
             tx.Start( "Create Shared Parameters" );
-
             CreateSharedParameters( doc, paramdefs, log );
             tx.Commit();
+            log.Add( string.Format( 
+              "Created {0} new shared parameter{1}", 
+              n, (1 == n ? "" : "s") ) );
           }
         }
-
         #endregion // Create required shared parameter bindings
 
         #region Import Forge meta properties to parameter values
@@ -345,7 +348,14 @@ namespace rvtmetaprop
         using( Transaction tx = new Transaction( doc ) )
         {
           tx.Start( "Import Forge Meta Properties" );
-          foreach( MetaProp m in props.Where<MetaProp>( m => m.CanSet ) )
+
+          n = props.Count;
+
+          log.Add( string.Format(
+            "Setting {0} propert{1}:",
+            n, ( 1 == n ? "y" : "ies" ) ) );
+
+          foreach( MetaProp m in props )
           {
             log.Add( string.Format(
               "Set {0} property {1} = '{2}'", m.component,
@@ -357,11 +367,13 @@ namespace rvtmetaprop
 
             n = a.Count; // may be zero if shared param creation failed
 
-            Debug.Assert( 0 == n || 1 == n, "expected one single parameter of this name; all others are skipped" );
+            Debug.Assert( 0 == n || 1 == n, 
+              "expected one single parameter of this "
+              + "name; all others are skipped" );
 
-            foreach( Parameter p in a )
+            if( 0 < n )
             {
-              m.SetValue( p );
+              m.SetValue( a[0] );
             }
           }
           tx.Commit();
@@ -371,6 +383,10 @@ namespace rvtmetaprop
         tg.Assimilate();
         //tg.Commit();
       }
+
+      log.Add( string.Format(
+        "{0:yyyy-MM-dd HH:mm:ss}: rvtmetaprop completed.\r\n",
+        DateTime.Now ) );
 
       filename = Path.Combine( Path.GetDirectoryName(
         Assembly.GetExecutingAssembly().Location ),
