@@ -194,7 +194,7 @@ namespace rvtmetaprop
       n = props.RemoveAll( m => m.IsFileOrLinkProperty );
 
       log.Add( n.ToString()
-        + " File and Link properties removed." );
+        + " File and Link properties removed" );
 
       #endregion // Remove 'Model' properties
 
@@ -307,7 +307,7 @@ namespace rvtmetaprop
             }
           }
         }
-        else
+        else if( !m.IsDeleteOverride )
         {
           // Property needs to be added to element
 

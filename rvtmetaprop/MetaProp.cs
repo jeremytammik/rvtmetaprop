@@ -99,6 +99,17 @@ namespace rvtmetaprop
     }
 
     /// <summary>
+    /// Predicate indicating this is a delete override.
+    /// </summary>
+    public bool IsDeleteOverride
+    {
+      get
+      {
+        return metaType.Equals( "DeleteOverride" );
+      }
+    }
+
+    /// <summary>
     /// Return the appropriate Revit parameter type to
     /// create a shared parameter.
     /// </summary>
