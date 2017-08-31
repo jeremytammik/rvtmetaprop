@@ -43,8 +43,8 @@ namespace rvtmetaprop
         = app.SharedParametersFilename;
 
       if( true )
-        //null == sharedParamsFileName
-        //|| 0 == sharedParamsFileName.Length
+      //null == sharedParamsFileName
+      //|| 0 == sharedParamsFileName.Length
       {
         path = Path.GetTempPath();
 
@@ -77,7 +77,7 @@ namespace rvtmetaprop
 
         // Create the category set for binding
 
-        Binding binding = app.Create.NewInstanceBinding( 
+        Binding binding = app.Create.NewInstanceBinding(
           def.Categories );
 
         // Retrieve or create shared parameter group
@@ -91,7 +91,7 @@ namespace rvtmetaprop
         // but it looks like Insert will just ignore 
         // them in that case.
 
-        Definition definition = group.Definitions.get_Item( 
+        Definition definition = group.Definitions.get_Item(
           pname );
 
         try
@@ -266,27 +266,31 @@ namespace rvtmetaprop
           }
           else
           {
-            foreach( Parameter p in a )
-            {
-              Definition pdef = p.Definition;
-              ExternalDefinition extdef = pdef as ExternalDefinition;
-              InternalDefinition intdef = pdef as InternalDefinition;
-              log.Add( string.Format( "extdef {0}, intdef {1}",
-                null == extdef ? "<null>" : "ok",
-                null == intdef ? "<null>" : "ok" ) );
+            Parameter p = a[0];
+            Definition pdef = p.Definition;
+            ExternalDefinition extdef = pdef as ExternalDefinition;
+            InternalDefinition intdef = pdef as InternalDefinition;
+            log.Add( string.Format( "extdef {0}, intdef {1}",
+              null == extdef ? "<null>" : "ok",
+              null == intdef ? "<null>" : "ok" ) );
 
-              ParameterType ptyp = pdef.ParameterType;
-              if( m.ParameterType != ptyp )
-              {
-                log.Add( string.Format(
-                  "Error: {0} parameter {1} has type {2} != meta property type {3}",
-                  m.component, m.displayName, ptyp.ToString(), m.metaType ) );
-              }
-              else
-              {
-                //p.Set( m.ParameterValue );
-                m.CanSet = true;
-              }
+            ParameterType ptyp = pdef.ParameterType;
+            if( m.ParameterType != ptyp )
+            {
+              log.Add( string.Format(
+                "Error: {0} parameter {1} has type {2} != meta property type {3}",
+                m.component, m.displayName, ptyp.ToString(), m.metaType ) );
+            }
+            else if( p.IsReadOnly )
+            {
+              log.Add( string.Format(
+                "Error: {0} parameter {1} is read-only",
+                m.component, m.displayName ) );
+
+            }
+            else
+            {
+              m.CanSet = true;
             }
           }
         }
@@ -372,7 +376,7 @@ namespace rvtmetaprop
         Assembly.GetExecutingAssembly().Location ),
         "rvtmetaprop.log" );
 
-      File.AppendAllText( filename, 
+      File.AppendAllText( filename,
         string.Join( "\r\n", log ) );
 
       Process.Start( filename );
