@@ -230,7 +230,7 @@ namespace rvtmetaprop
 
         log.Add( "Error: " + s );
 
-        s = string.Join( "\r\n  ",
+        s = "  " + string.Join( "\r\n  ",
           missing.Select<MetaProp, string>(
             m => m.component ) );
 
