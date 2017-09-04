@@ -317,20 +317,34 @@ namespace rvtmetaprop
         {
           // Property needs to be added to element
 
-          if( !paramdefs.ContainsKey( s ) )
+          if( paramdefs.ContainsKey( s )
+            && !m.displayCategory.Equals(
+              paramdefs[s].GroupName ) )
           {
-            paramdefs.Add( s, new ParamDef( m ) );
+            log.Add( string.Format(
+              "Error: element <{0}> parameter '{1}' "
+              + "display category is {2} != {3} from "
+              + "prior definition",
+              m.component, m.displayName, m.displayCategory,
+              paramdefs[s].GroupName ) );
           }
-
-          ParamDef def = paramdefs[s];
-
-          Category cat = e.Category;
-
-          if( !def.Categories.Contains( cat ) )
+          else
           {
-            def.Categories.Insert( cat );
+            if( !paramdefs.ContainsKey( s ) )
+            {
+              paramdefs.Add( s, new ParamDef( m ) );
+            }
+
+            ParamDef def = paramdefs[s];
+
+            Category cat = e.Category;
+
+            if( !def.Categories.Contains( cat ) )
+            {
+              def.Categories.Insert( cat );
+            }
+            m.CanSet = true;
           }
-          m.CanSet = true;
         }
       }
 
