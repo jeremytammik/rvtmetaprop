@@ -1,0 +1,26 @@
+[
+  {
+    "displayCategory": "Test",
+    "displayValue": "jeremy text value",
+    "displayName": "jeremy_text",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "Test",
+    "displayValue": "0.12345",
+    "displayName": "jeremy_double",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Double"
+  },
+  {
+    "displayCategory": "Test",
+    "displayValue": "123",
+    "displayName": "jeremy_int",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Int"
+  }
+]
