@@ -181,9 +181,12 @@ namespace rvtmetaprop
 
       n = props.RemoveAll( m => m.IsModelProperty );
 
-      log.Add( n.ToString()
-        + " 'Model' properties removed with"
-        + " extenalId prefix 'doc_'" );
+      if( 0 < n )
+      {
+        log.Add( n.ToString()
+          + " 'Model' properties removed with"
+          + " extenalId prefix 'doc_'" );
+      }
 
       #endregion // Remove 'Model' properties
 
@@ -193,8 +196,11 @@ namespace rvtmetaprop
 
       n = props.RemoveAll( m => m.IsFileOrLinkProperty );
 
-      log.Add( n.ToString()
+      if( 0 < n )
+      {
+        log.Add( n.ToString()
         + " File and Link properties removed" );
+      }
 
       #endregion // Remove 'Model' properties
 
@@ -245,7 +251,7 @@ namespace rvtmetaprop
       }
       #endregion // Determine missing elements
 
-      #region Determine parameters to use
+      #region Determine parameters to use to store in
 
       // Determine what existing properties can be used;
       // for new ones, create dictionary mapping parameter 
@@ -330,7 +336,7 @@ namespace rvtmetaprop
 
       props.RemoveAll( m => !m.CanSet );
 
-      #endregion // Determine parameters to use
+      #endregion // Determine parameters to use to store in
 
       using( TransactionGroup tg = new TransactionGroup( doc ) )
       {
