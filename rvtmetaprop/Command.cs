@@ -96,7 +96,8 @@ namespace rvtmetaprop
             definition = group.Definitions.Create( opt );
           }
 
-          doc.ParameterBindings.Insert( definition, binding );
+          doc.ParameterBindings.Insert( definition, binding, 
+            BuiltInParameterGroup.PG_GENERAL );
         }
         catch( Exception ex )
         {
