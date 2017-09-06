@@ -52,10 +52,10 @@ In order to enable the round trip intact, it has to limits the meta property dat
 ![Forge meta property editor data types](img/meta_editor_data_types.png "Forge meta property editor data types")
     
 - Property group &ndash; restricted to one of the 116 Revit built-in parameter groups
-    - General
     - Data
-    - Text
+    - General
     - Other
+    - Text
     - ...
     
 ![Forge meta property editor data types](img/meta_editor_param_group.png "Forge meta property editor parameter groups")
