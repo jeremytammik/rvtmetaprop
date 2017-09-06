@@ -42,6 +42,8 @@ You have two options to programmatically attach arbitrary data to building eleme
 To demonstrate round-trip meta property editing on a Revit BIM model in the Forge Viewer, Philippe implemented
 the [Forge meta property editor](http://meta-editor.autodesk.link).
 
+![Forge meta property editor](img/meta_editor.png "Forge meta property editor")
+
 In order to enable the round trip intact, it has to limits the meta property data types and group names to those supported by Revit shared parameters:
 
 - Data types &ndash; restricted to Revit parameter storage types
