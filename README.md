@@ -14,7 +14,7 @@ The office model is displayed, and its properties displayed in a panel on the ri
 
 You can select any BIM element and see all its properties as well.
 
-The buttons on the right-hand side of the property panel enable search, export to `CSV` and `JSON`, and adding new properties.
+The buttons on the top right-hand side of the property panel enable search, export to `CSV` and `JSON`, and adding new properties.
 
 Each property can also be deleted.
 
@@ -43,6 +43,12 @@ To demonstrate round-trip meta property editing on a Revit BIM model in the Forg
 the [Forge meta property editor](http://meta-editor.autodesk.link).
 
 ![Forge meta property editor](img/meta_editor.png "Forge meta property editor")
+
+Again, the buttons on the top right-hand side of the property panel enable adding new properties (the plus sign icon) and export to `CSV` and `JSON` (the cloud icon).
+
+RvtMetaProp reads modification into Revit and updates the BIM accordingly.
+
+Retranslation of the updated BIM to Forge completes the round trip.
 
 In order to enable the round trip intact, it has to limits the meta property data types and group names to those supported by Revit shared parameters:
 
