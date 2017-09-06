@@ -16,11 +16,25 @@ namespace rvtmetaprop
 
     public string component { get; set; }
 
+    /// <summary>
+    /// The meta property group name, corresponding to
+    /// the built-in parameter group display string or
+    /// label.
+    /// </summary>
     public string displayCategory { get; set; }
 
     public string displayName { get; set; }
 
     public string displayValue { get; set; }
+
+
+    /// <summary>
+    /// A string representation of the meta property 
+    /// grouping id, corresponding to the string
+    /// representation of the corresponding Revit
+    /// built-in parameter group enum value.
+    /// </summary>
+    public string categoryId { get; set; }
 
     /// <summary>
     /// metaType has one of the following values: 

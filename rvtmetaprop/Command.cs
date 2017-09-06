@@ -96,8 +96,8 @@ namespace rvtmetaprop
             definition = group.Definitions.Create( opt );
           }
 
-          doc.ParameterBindings.Insert( definition, binding, 
-            BuiltInParameterGroup.PG_GENERAL );
+          doc.ParameterBindings.Insert( definition, 
+            binding, def.BipGroup );
         }
         catch( Exception ex )
         {
@@ -316,6 +316,10 @@ namespace rvtmetaprop
         else if( !m.IsDeleteOverride )
         {
           // Property needs to be added to element
+
+          // If several properties are added, 
+          // ensure they all go into the same 
+          // built -in parameter group.
 
           if( paramdefs.ContainsKey( s )
             && !m.displayCategory.Equals(

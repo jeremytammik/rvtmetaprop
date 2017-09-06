@@ -49,6 +49,7 @@ using System.Runtime.InteropServices;
 // 2018.0.0.11 skip shared param creation for delete request
 // 2018.0.0.12 added urban house sample model and first test on http://meta-editor.autodesk.link/
 // 2017-09-04 2018.0.0.13 added support for shared param group name
+// 2017-09-06 2018.0.0.14 implemented MetaProp.categoryId and ParamDef.BipGroup
 //
-[assembly: AssemblyVersion( "2018.0.0.13" )]
-[assembly: AssemblyFileVersion( "2018.0.0.13" )]
+[assembly: AssemblyVersion( "2018.0.0.14" )]
+[assembly: AssemblyFileVersion( "2018.0.0.14" )]

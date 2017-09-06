@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using System;
 
 namespace rvtmetaprop
 {
@@ -15,5 +16,20 @@ namespace rvtmetaprop
       Categories = new CategorySet(); // List<ElementId>();
       GroupName = m.displayCategory;
     }
+
+
+    /// <summary>
+    /// Return the built-in parameter group enum value 
+    /// corresponding to the property group name.
+    /// </summary>
+    public BuiltInParameterGroup BipGroup
+    {
+      get
+      {
+        return (BuiltInParameterGroup) Enum.Parse( 
+          typeof( BuiltInParameterGroup ), GroupName );
+      }
+    }
+
   }
 }
