@@ -50,7 +50,7 @@ RvtMetaProp reads modification into Revit and updates the BIM accordingly.
 
 Retranslation of the updated BIM to Forge completes the round trip.
 
-In order to enable the round trip intact, it has to limits the meta property data types and group names to those supported by Revit shared parameters:
+In order to enable the round trip intact, the meta property data types and group names are restricted to those supported by Revit shared parameters:
 
 - Data types &ndash; restricted to Revit parameter storage types
     - Text
