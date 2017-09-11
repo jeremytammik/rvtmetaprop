@@ -76,7 +76,7 @@ The `JSON` file contents are analoguous:
 ]
 ```
 
-You can create a `CSV` or `JSON` input file matching this format to generate new shared parameters in your BIM.
+You can create a `CSV` or `JSON` input file matching this format to generate new shared parameters in your BIM, either using the Forge meta property editor, or in any other way you like.
 
 
 ## Forge Configurator Sample
