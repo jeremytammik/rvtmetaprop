@@ -1,10 +1,10 @@
 # RvtMetaProp
 
-Revit C# .NET add-in to import and store meta properties created
+Revit C# .NET add-in to _import and store meta properties_ created
 in [Philippe Leefsma](https://github.com/leefsmp)'s
 [Forge Configurator &ndash; Meta Properties](https://forge-rcdb.autodesk.io/configurator?id=59780eec17d671029c53420e) sample.
 
-Handily enough, RvtMetaProp can also be used as a stand-alone utility to automatically create shared parameters and populate their values on BIM elements from a spreadsheet, completely independant of the Forge app.
+Handily enough, RvtMetaProp can also be used as a stand-alone utility to automatically _create shared parameters and populate their values_ on BIM elements from a spreadsheet, completely independant of the Forge app.
 
 It reads the properties associated with individual BIM elements from a `CSV` or `JSON` file.
 
