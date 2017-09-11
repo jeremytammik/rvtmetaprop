@@ -1,0 +1,29 @@
+[
+  {
+    "displayCategory": "General",
+    "displayValue": "this is a text added in forge",
+    "displayName": "test_text",
+    "categoryId": "PG_GENERAL",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "General",
+    "displayValue": "0.12",
+    "displayName": "test_real",
+    "categoryId": "PG_GENERAL",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Double"
+  },
+  {
+    "displayCategory": "General",
+    "displayValue": "12",
+    "displayName": "test_int",
+    "categoryId": "PG_GENERAL",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Int"
+  }
+]

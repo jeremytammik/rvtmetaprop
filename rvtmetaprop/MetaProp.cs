@@ -63,7 +63,7 @@ namespace rvtmetaprop
     /// <summary>
     /// Read from a CSV file record containing the 
     /// following fields:
-    /// "externalId","component","displayCategory","displayName","displayValue","metaType","filelink","filename","link"
+    /// "externalId","component","displayCategory","categoryId","displayName","displayValue","metaType","filelink","filename","link"
     /// </summary>
     public MetaProp( IList<string> record )
     {
@@ -71,20 +71,27 @@ namespace rvtmetaprop
 
       int n = record.Count;
       //Debug.Print( n.ToString() );
-      if( 7 != n && 8 != n && 9 != n )
+      if( 8 > n || 10 < n )
       {
         throw new ArgumentException(
-          "Expected nine fields in CSV file record." );
+          "Expected ten fields in CSV file record." );
       }
       externalId = record[0];
       component = record[1];
       displayCategory = record[2];
-      displayName = record[3];
-      displayValue = record[4];
-      metaType = record[5];
-      filelink = record[6];
-      if( 8 == n ) { filename = record[7]; }
-      if( 9 == n ) { link = record[8]; }
+      categoryId = record[3];
+      displayName = record[4];
+      displayValue = record[5];
+      metaType = record[6];
+      filelink = record[7];
+      if( 8 < n ) { filename = record[8]; }
+      if( 9 < n ) { link = record[9]; }
+
+      // Ensure at least metaType is correctly set
+
+      Debug.Assert( 
+        ParameterType.Invalid != ParameterType, 
+        "unexpected metaType" );
     }
 
     /// <summary>
