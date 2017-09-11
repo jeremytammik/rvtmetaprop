@@ -12,12 +12,8 @@ If the property corresponds to an existing parameter on a BIM element, its value
 
 For a new property, a shared parameter is created.
 
-Here is a [four and a half minute recording](https://youtu.be/I5AvbSrZ3Wk) of this add-in in action:
-
-<center>
-<iframe width="480" height="270" src="https://www.youtube.com/embed/I5AvbSrZ3Wk?rel=0" frameborder="0" allowfullscreen></iframe>
-</center>
-
+For a quick first impression, check out
+the [four and a half minute recording](https://youtu.be/I5AvbSrZ3Wk) of this add-in in action.
 
 
 ## CSV and JSON Input File Format
