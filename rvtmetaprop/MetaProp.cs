@@ -171,6 +171,19 @@ namespace rvtmetaprop
     }
 
     /// <summary>
+    /// Return the built-in parameter group enum value 
+    /// corresponding to `categoryId`.
+    /// </summary>
+    public BuiltInParameterGroup BipGroup
+    {
+      get
+      {
+        return (BuiltInParameterGroup) Enum.Parse(
+          typeof( BuiltInParameterGroup ), categoryId );
+      }
+    }
+
+    /// <summary>
     /// Return the appropriate value to populate
     /// a Revit shared parameter.
     /// </summary>

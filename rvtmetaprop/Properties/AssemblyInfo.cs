@@ -51,6 +51,7 @@ using System.Runtime.InteropServices;
 // 2017-09-04 2018.0.0.13 added support for shared param group name
 // 2017-09-06 2018.0.0.14 implemented MetaProp.categoryId and ParamDef.BipGroup
 // 2017-09-11 2018.0.0.15 added MetaProp.categoryId support parsing CSV
+// 2017-09-11 2018.0.0.16 implemented MetaProp.BipGroup
 //
-[assembly: AssemblyVersion( "2018.0.0.15" )]
-[assembly: AssemblyFileVersion( "2018.0.0.15" )]
+[assembly: AssemblyVersion( "2018.0.0.16" )]
+[assembly: AssemblyFileVersion( "2018.0.0.16" )]

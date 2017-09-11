@@ -9,27 +9,14 @@ namespace rvtmetaprop
     //public List<ElementId> Categories { get; set; }
     public CategorySet Categories { get; set; }
     public string GroupName { get; set; }
+    public BuiltInParameterGroup BipGroup { get; set; }
 
     public ParamDef( MetaProp m )
     {
       Type = m.ParameterType;
       Categories = new CategorySet(); // List<ElementId>();
       GroupName = m.displayCategory;
+      BipGroup = m.BipGroup;
     }
-
-
-    /// <summary>
-    /// Return the built-in parameter group enum value 
-    /// corresponding to the property group name.
-    /// </summary>
-    public BuiltInParameterGroup BipGroup
-    {
-      get
-      {
-        return (BuiltInParameterGroup) Enum.Parse( 
-          typeof( BuiltInParameterGroup ), GroupName );
-      }
-    }
-
   }
 }
