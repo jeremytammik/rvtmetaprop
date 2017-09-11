@@ -4,13 +4,92 @@ Revit C# .NET add-in to import and store meta properties created
 in [Philippe Leefsma](https://github.com/leefsmp)'s
 [Forge Configurator &ndash; Meta Properties](https://forge-rcdb.autodesk.io/configurator?id=59780eec17d671029c53420e) sample.
 
-- Look at
-the [online Forge configurator sample](https://forge-rcdb.autodesk.io/configurator).
+Handily enough, RvtMetaProp can also be used as a stand-alone utility to automatically create shared parameters and populate their values on BIM elements from a spreadsheet, completely independant of the Forge app.
+
+It reads the properties associated with individual BIM elements from a `CSV` or `JSON` file.
+
+If the property corresponds to an existing parameter on a BIM element, its value is updated accordingly.
+
+For a new property, a shared parameter is created.
+
+
+
+## CSV and JSON Input File Format
+
+The `CSV` and `JSON` input files specify the following data, which correspond to the list Revit information:
+
+- `externalId` &ndash; the Revit database element `UniqueId`
+- `component` &ndash; element name and element id (ignored)
+- `displayCategory` &ndash; built-in parameter group name under which to display and store a shared parameter
+- `categoryId` &ndash; built-in parameter group enumeration value as string
+- `displayName` &ndash; meta property name
+- `displayValue` &ndash; meta property value
+- `metaType` &ndash; meta property data type; for Revit, all but Double, Int and Text are ignored
+- `filelink` &ndash; meta property file URL (ignored)
+- `filename` &ndash; meta property file name (ignored)
+- `link` &ndash; meta property link URL (ignored)
+
+As you can see, some information defined in Forge and specified in the files may be ignored when importing into Revit.
+
+The `CSV` file format looks like this:
+
+```
+"externalId","component","displayCategory","categoryId","displayName","displayValue","metaType","filelink","filename","link"
+"7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d","Basic Wall [49805]","General","PG_GENERAL","test_text","this is a text added in forge","Text",,,
+"7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d","Basic Wall [49805]","General","PG_GENERAL","test_real","0.12","Double",,,
+"7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d","Basic Wall [49805]","General","PG_GENERAL","test_int","12","Int",,,
+```
+
+The fields are read in an order dependent manner.
+
+The `JSON` file contents are analoguous:
+
+```
+[
+  {
+    "displayCategory": "General",
+    "displayValue": "this is a text added in forge",
+    "displayName": "test_text",
+    "categoryId": "PG_GENERAL",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Text"
+  },
+  {
+    "displayCategory": "General",
+    "displayValue": "0.12",
+    "displayName": "test_real",
+    "categoryId": "PG_GENERAL",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Double"
+  },
+  {
+    "displayCategory": "General",
+    "displayValue": "12",
+    "displayName": "test_int",
+    "categoryId": "PG_GENERAL",
+    "externalId": "7df7740a-9736-4a3e-81ec-45e05b0d2ad2-0000c28d",
+    "component": "Basic Wall [49805]",
+    "metaType": "Int"
+  }
+]
+```
+
+You can create a `CSV` or `JSON` input file matching this format to generate new shared parameters in your BIM.
+
+
+## Forge Configurator Sample
+
+A sample meta property editor is included in 
+the [online Forge configurator sample](https://forge-rcdb.autodesk.io/configurator):
+
 - Scroll down through the models to *Meta Properties*.
 - In the left-hand drop-down menu, select *Office*.
 - Click on the *Meta Properties* box.
 
-The office model is displayed, and its properties displayed in a panel on the right-hand side.
+The [office model](https://forge-rcdb.autodesk.io/configurator?id=59780eec17d671029c53420e) is
+displayed, and its properties displayed in a panel on the right-hand side.
 
 You can select any BIM element and see all its properties as well.
 
@@ -20,6 +99,10 @@ Each property can also be deleted.
 
 
 ## Two Options to Add Custom Properties to the Revit BIM
+
+Before implementing RvtMetaProp, I pondered the best way to add custom properties to a Revit BIM.
+
+Basically, there are two fundamentally different approaches, as shown by the following Q &amp; A:
 
 [Q] How can I import updated and added properties into the Revit BIM?
 
